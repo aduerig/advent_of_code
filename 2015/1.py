@@ -10,6 +10,12 @@ filepath = pathlib.Path(__file__)
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
 with open(data_file) as f:
-    for line in f.readlines():
-        line = line.strip()
-        
+    a = 0
+    for index, c in enumerate(f.readline()):
+        if c == '(':
+            a += 1
+        else:
+            a -= 1
+        if a == -1:
+            print(index + 1)
+            exit()
