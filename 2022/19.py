@@ -4,6 +4,11 @@
 import pathlib
 import time
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 filepath = pathlib.Path(__file__)
@@ -204,7 +209,7 @@ print_blue('all 3', multed * all_max_geodes[2])
 # import pathlib
 # import time
 
-# from helpers import * 
+ 
 
 # filepath = pathlib.Path(__file__)
 

@@ -3,6 +3,11 @@
 import random
 import pathlib
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 filepath = pathlib.Path(__file__)
@@ -63,7 +68,7 @@ for i in range(3952673930000, 10000000000000000):
 
 # # https://adventofcode.com/2022
 
-# from helpers import * 
+ 
 
 # import pathlib
 

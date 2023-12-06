@@ -4,6 +4,11 @@ import pathlib
 import sys
 sys.setrecursionlimit(100000) 
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 
@@ -68,7 +73,7 @@ print_green(total_moves_stopped)
 
 # # https://adventofcode.com/2022
 
-# from helpers import * 
+ 
 
 # import pathlib
 

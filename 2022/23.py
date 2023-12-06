@@ -1,5 +1,10 @@
 # https://adventofcode.com/2022
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 import pathlib
@@ -167,7 +172,7 @@ print_green(blank_spaces)
 
 # # https://adventofcode.com/2022
 
-# from helpers import * 
+ 
 
 # import pathlib
 

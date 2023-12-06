@@ -3,6 +3,11 @@
 from copy import deepcopy
 import pathlib
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 filepath = pathlib.Path(__file__)
@@ -248,7 +253,7 @@ print_green(f'{ans=}, {pos=}, {direction=}, {facing[direction]}')
 
 # # https://adventofcode.com/2022
 
-# from helpers import * 
+ 
 
 # import pathlib
 

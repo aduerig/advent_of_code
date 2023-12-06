@@ -1,13 +1,15 @@
 # https://adventofcode.com/2023
 import pathlib
 import time
+import sys
 
 import numpy as np
 from numba import jit, prange
 
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
-filepath = pathlib.Path(__file__)
 data_file = filepath.parent.joinpath('5.dat')
 
 

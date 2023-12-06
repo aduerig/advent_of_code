@@ -3,6 +3,11 @@ import signal
 import sys
 
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 data = []

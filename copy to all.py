@@ -1,3 +1,8 @@
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import *
 
 for i in range(1, 26):

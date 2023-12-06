@@ -1,10 +1,12 @@
 # https://adventofcode.com/2023
-import pathlib
 import time
-
-from helpers import * 
+import sys
+import pathlib
 
 filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
+from helpers import * 
+
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
 
@@ -91,7 +93,12 @@ print(f'Took {time.time() - start_time:.2f} seconds')
 # # https://adventofcode.com/2023
 # import pathlib
 
-# from helpers import * 
+# import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
+from helpers import * 
 
 # filepath = pathlib.Path(__file__)
 # data_file = filepath.parent.joinpath(filepath.stem + '.dat')

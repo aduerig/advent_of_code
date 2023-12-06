@@ -1,5 +1,10 @@
 # https://adventofcode.com/2022
 
+import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 from collections import deque
@@ -177,7 +182,7 @@ print_yellow(f'{time.time() - start_time} total seconds')
 
 # # https://adventofcode.com/2022
 
-# from helpers import * 
+ 
 
 # import re
 # import pathlib

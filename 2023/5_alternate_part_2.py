@@ -1,7 +1,10 @@
 # https://adventofcode.com/2023
 import pathlib
 import time
+import sys
 
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 data_file = pathlib.Path(__file__).parent.joinpath('5.dat')
@@ -71,7 +74,12 @@ print_green(f'{min(seed_ranges)[0]} - took {time.time() - start_time:.5f} second
 # # https://adventofcode.com/2023
 # import pathlib
 
-# from helpers import * 
+# import sys
+import pathlib
+
+filepath = pathlib.Path(__file__)
+sys.path.append(str(filepath.parent.parent))
+from helpers import * 
 
 # filepath = pathlib.Path(__file__)
 # data_file = filepath.parent.joinpath('5.dat')
