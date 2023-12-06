@@ -1,1 +1,1 @@
-https://adventofcode.com/2023
+# All my advent of code solutions
