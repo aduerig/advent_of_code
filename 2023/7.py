@@ -33,14 +33,14 @@ with open(data_file) as f:
     for line in f.readlines():
         hand, bid = list(line.strip().split())
 
-        u = {
+        mapping = {
             'T': 10,
             'J': 1,
             'Q': 11,
             'K': 12,
             'A': 13
         }
-        hand = [int(x) if x.isdigit() else u[x] for x in hand]
+        hand = [int(mapping.get(x, x)) for x in hand]
                 
         best_type = 0
         for new_j in range(2, 14):
