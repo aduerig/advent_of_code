@@ -19,18 +19,14 @@ def get_type(hand):
         return 7
     if a == b == c == d:
         return 6
-    
-
     if a == b == c:
         if d == e:
             return 5
         return 4
-    
     if c == d:
         return 3
     return 2
     
-
 
 hands = []
 with open(data_file) as f:
@@ -45,20 +41,17 @@ with open(data_file) as f:
             'A': 13
         }
         hand = [int(x) if x.isdigit() else u[x] for x in hand]
-        og_hand = list(hand)
         
         best_type = 0
         for new_j in range(2, 14):
             new_hand = [new_j if x == 1 else x for x in hand]
-            new_hand.sort(key=lambda x: (og_hand.count(x), x), reverse=True)
-            best_type = max(get_type(new_hand), best_type)
-        hands.append((best_type, og_hand, int(bid)))
+            new_hand = sorted(new_hand, key=lambda x: (hand.count(x), x), reverse=True)
+            best_type = max(best_type, get_type(new_hand))
+        hands.append((best_type, hand, int(bid)))
 
-hands.sort()
 total = 0
-for index, (_type, _hand, bid) in enumerate(hands):
+for index, (_type, _hand, bid) in enumerate(sorted(hands)):
     total += bid * (index + 1)
-    print_green(_type, _hand)
 print(total)
 
 
