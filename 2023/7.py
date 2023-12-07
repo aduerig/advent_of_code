@@ -51,8 +51,8 @@ with open(data_file) as f:
         hands.append((best_type, hand, int(bid)))
 
 total = 0
-for index, (_type, _hand, bid) in enumerate(sorted(hands)):
-    total += bid * (index + 1)
+for i, (_, _, bid) in enumerate(sorted(hands), start=1):
+    total += bid * i
 print(total)
 
 
