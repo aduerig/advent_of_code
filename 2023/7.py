@@ -11,8 +11,7 @@ from helpers import *
 filepath = pathlib.Path(__file__)
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
-def get_type(hand):
-    a, b, c, d, e = hand
+def get_type(a, b, c, d, e):
     if a != b:
         return 1
     if a == b == c == d == e:
@@ -26,7 +25,6 @@ def get_type(hand):
     if c == d:
         return 3
     return 2
-    
 
 hands = []
 with open(data_file) as f:
@@ -46,7 +44,7 @@ with open(data_file) as f:
         for new_j in range(2, 14):
             multiclone_hand = [new_j if x == 1 else x for x in hand]
             multiclone_hand = sorted(multiclone_hand, key=lambda x: (hand.count(x), x), reverse=True)
-            best_type = max(best_type, get_type(multiclone_hand))
+            best_type = max(best_type, get_type(*multiclone_hand))
 
         hands.append((best_type, hand, int(bid)))
 
