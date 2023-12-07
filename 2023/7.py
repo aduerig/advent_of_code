@@ -30,7 +30,7 @@ hands = []
 with open(data_file) as f:
     for line in f.readlines():
         hand, bid = list(line.strip().split())
-
+        
         mapping = {
             'T': 10,
             'J': 1,
