@@ -1,6 +1,4 @@
 # https://adventofcode.com/2023
-import pathlib
-
 import sys
 import pathlib
 
