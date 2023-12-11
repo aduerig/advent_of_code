@@ -96,18 +96,6 @@ combined = {pos for pos in dir_1 if pos in dir_2}
 graph = [[graph[y][x] if (x, y) in combined else '.' for x in range(len(graph[0]))] for y in range(len(graph))]
 
 printy(graph)
-holes = [[None for _ in y] for y in graph]
-
-
-# mapping_2 = {
-#     '|': [(1, 0), (-1, 0)],
-#     '-': [(0, 1), (0, -1)],
-#     '└': [(-1, 0), (0, 1)],
-#     '┘': [(1, 0), (0, 1)],
-#     '┐': [(0, -1), (1, 0)],
-#     '┌': [(-1, 0), (0, -1)],
-# }
-
 mapping_2 = {
     '|': [(1, 0), (-1, 0)],
     '-': [(0, 1), (0, -1)],
@@ -117,44 +105,110 @@ mapping_2 = {
     '┌': [(1, 1)],
 }
 
+def in_visited_arr(visited, ele):
+    for v in visited:
+        if ele in v:
+            return True
+    return False
+
+tracker = {i: next_color_f() for i in range(8)}
+def visited_to_color(visited, ele, char):
+    for index, v in enumerate(visited):
+        if ele in v:
+            return tracker[index](char)
+    return ' '
+
+def very_fancy_print():
+    for y in range(0, len(graph)):
+        for x in range(0, len(graph[0])):
+            pipe_infer = ' '
+            if x != len(graph[0]) - 1:
+                next_pipe = graph[y][x+1]
+                if next_pipe in '┐-┘':
+                    pipe_infer = '─'
+            print_red(f'{graph[y][x]}{pipe_infer}', end='')
+        print()
+
+        if y != len(graph) - 1:
+            for x in range(0, len(graph[0])):
+                char = visited_to_color(global_visited, (x+1, y+1), '█')
+                pipe_infer = ' '
+                next_pipe = graph[y+1][x]
+                if next_pipe in '|┘└':
+                    pipe_infer = '|'
+                print_red(f'{pipe_infer}{char}', end='')
+            print()
+
 
 def dfs(pos, visited):
     if not in_bounds(pos, graph):
         return
-    if pos in visited:
+    if in_visited_arr(global_visited, pos):
         return
     visited.add(pos)
+    # very_fancy_print()
+    # input()
 
     x, y = pos
-    left = graph[y][x - 1]
-    right = graph[y][x]
-    up = graph[y - 1][x]
-    down = graph[y][x]
+    up_left = graph[y - 1][x - 1]
+    up_right = graph[y - 1][x]
+    down_left = graph[y][x - 1]
+    down_right = graph[y][x]
 
-    if left not in '┌└|':
+    up = True
+    down = True
+    left = True
+    right = True
+
+    if up_left in '|┌┐' or down_left in '|└┘':
+        left = False
+    if up_left in '-└┌' or up_right in '-┘┐':
+        up = False
+    if up_right in '|┌┐' or down_right in '|└┘':
+        right = False
+
+    if down_left in '-└┌' or down_right in '-┐┘':
+        down = False
+
+    if left:
         dfs((x - 1, y), visited)
-    if right not in '┘┐|':
+    if right:
         dfs((x + 1, y), visited)
-    if up not in '└┘-':
+    if up:
         dfs((x, y - 1), visited)
-    if down not in '┌┐-':
+    if down:
         dfs((x, y + 1), visited)
 
-
-visited = []
+global_visited = []
 for pos in combined:
     for dx, dy in mapping_2[graph[pos[1]][pos[0]]]:
         new_pos = (pos[0] + dx, pos[1] + dy)
-        for v in visited:
-            if new_pos in v:
-                break
-        else:
-            visited.append(set())
-            dfs(new_pos, visited[-1])
-            print(f'New set for {new_pos}, {len(visited[-1])}')
+        if not in_visited_arr(global_visited, new_pos):
+            if not in_bounds(new_pos, graph):
+                continue
+            global_visited.append(set())
+            dfs(new_pos, global_visited[-1])
 
-for i, v in enumerate(visited):
-    print(f'{i=}, {len(v)=}')
+
+very_fancy_print()
+
+
+def count_dots(visited):
+    count = 0
+    for y in range(len(graph)):
+        for x in range(len(graph[0])):
+            if (x, y) in visited and graph[y][x] == '.':
+                count += 1
+    return count
+
+
+for index, visited in enumerate(global_visited):
+    count = count_dots(visited)
+    print(f'Set {index} - len: {len(visited):>4}, dots: {count}')
+
+
+
+# very_fancy_print()
 
 
 # 3024 is too high
