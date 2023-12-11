@@ -146,8 +146,8 @@ def dfs(pos, visited):
     if in_visited_arr(global_visited, pos):
         return
     visited.add(pos)
-    # very_fancy_print()
-    # input()
+    very_fancy_print()
+    input()
 
     x, y = pos
     up_left = graph[y - 1][x - 1]
