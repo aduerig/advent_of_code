@@ -9,7 +9,6 @@ filepath = pathlib.Path(__file__)
 sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
-filepath = pathlib.Path(__file__)
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
 
@@ -100,14 +99,24 @@ printy(graph)
 holes = [[None for _ in y] for y in graph]
 
 
+# mapping_2 = {
+#     '|': [(1, 0), (-1, 0)],
+#     '-': [(0, 1), (0, -1)],
+#     '└': [(-1, 0), (0, 1)],
+#     '┘': [(1, 0), (0, 1)],
+#     '┐': [(0, -1), (1, 0)],
+#     '┌': [(-1, 0), (0, -1)],
+# }
+
 mapping_2 = {
     '|': [(1, 0), (-1, 0)],
     '-': [(0, 1), (0, -1)],
-    '└': [(-1, 0), (0, 1)],
-    '┘': [(1, 0), (0, 1)],
-    '┐': [(0, -1), (1, 0)],
-    '┌': [(-1, 0), (0, -1)],
+    '└': [(1, -1)],
+    '┘': [(-1, -1)],
+    '┐': [(-1, 1)],
+    '┌': [(1, 1)],
 }
+
 
 def dfs(pos, visited):
     if not in_bounds(pos, graph):
@@ -116,11 +125,20 @@ def dfs(pos, visited):
         return
     visited.add(pos)
 
-    left = graph[pos[1]][pos[0] - 1]
-    right = graph[pos[1]][pos[0]]
-    up = graph[pos[1] - 1][pos[0]]
-    down = graph[pos[1]][pos[0]]
+    x, y = pos
+    left = graph[y][x - 1]
+    right = graph[y][x]
+    up = graph[y - 1][x]
+    down = graph[y][x]
 
+    if left not in '┌└|':
+        dfs((x - 1, y), visited)
+    if right not in '┘┐|':
+        dfs((x + 1, y), visited)
+    if up not in '└┘-':
+        dfs((x, y - 1), visited)
+    if down not in '┌┐-':
+        dfs((x, y + 1), visited)
 
 
 visited = []
@@ -133,7 +151,10 @@ for pos in combined:
         else:
             visited.append(set())
             dfs(new_pos, visited[-1])
+            print(f'New set for {new_pos}, {len(visited[-1])}')
 
+for i, v in enumerate(visited):
+    print(f'{i=}, {len(v)=}')
 
 
 # 3024 is too high
