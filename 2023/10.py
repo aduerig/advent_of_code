@@ -42,16 +42,12 @@ mapping = {
 def allowed(p1, p2):
     if x < 0 or y < 0 or x >= len(graph[0]) or y >= len(graph):
         return False
-    
-
     ele_2 = graph[p2[1]][p2[0]]
-
     for dx, dy in mapping[ele_2]:
         newx, newy = p2[0] + dx, p2[1] + dy
         if (newx, newy) == p1:
             return True
     return False
-
 
 
 def traverse(pos, fr, reached, depth):
@@ -104,7 +100,6 @@ for m in mapping:
     counted = {start: 'S'}
 
     total = 0
-    
     for y in range(len(graph)):
         c = 0
         on = False
