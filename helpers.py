@@ -212,13 +212,17 @@ red = lambda s: f'{bcolors.FAIL}{s}{bcolors.ENDC}'
 
 color_tracker = 0
 avail_colors = [(yellow, 'yellow'), (green, 'green'), (cyan, 'cyan'), (blue, 'blue'), (red, 'red')]
-def next_color(s, skip=None):
+def next_color_f(skip=None):
     global color_tracker
     while True:
         color_tracker = (color_tracker + 1) % len(avail_colors)
         if skip is None or avail_colors[color_tracker][1] not in skip:
             break
-    return avail_colors[color_tracker][0](s)
+    return avail_colors[color_tracker][0]
+
+
+def next_color(s, skip=None):
+    return next_color_f(s)
 
 
 def print_yellow(*args, **kwargs):
