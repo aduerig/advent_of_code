@@ -8,7 +8,10 @@ from helpers import *
 
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
+
+rows = []
 with open(data_file) as f:
-    for line in f.readlines():
-        line = line.strip()
-        
+    for line in f.read().splitlines()():
+        map, constraints = line.split()
+
+        constraints = list(map(int, constraints.split(',')))
