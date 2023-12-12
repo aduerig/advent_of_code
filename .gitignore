@@ -5,3 +5,5 @@ other*
 temp/
 .vscode
 out
+perf.data
+perf.data.old
