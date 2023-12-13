@@ -8,49 +8,12 @@
 #include <chrono>
 #include <algorithm>
 #include <stdint.h>
+#include <unordered_map>
 
 
 using namespace std;
 using namespace std::chrono;
 
-
-// int springs_size;
-// vector<char> springs;
-// vector<int> constraints;
-// inline int64_t recurse(int spring_index, int constraint_index, int to_place) {
-//     if (to_place == 0) {
-//         for (; spring_index < springs_size; ++spring_index) {
-//             if (springs[spring_index] == '#') {
-//                 return 0;
-//             }
-//         }
-//         return 1;
-//     }
-//     int spaces_left = springs_size - spring_index;
-//     if (to_place > spaces_left) {
-//         return 0;
-//     }
-    
-//     int64_t total = 0;
-//     if (springs[spring_index] != '#') {
-//         total += recurse(spring_index + 1, constraint_index, to_place);
-//     }
-
-//     int num = constraints[constraint_index];
-//     if (springs[spring_index] != '.') {
-//         int checking = spring_index;
-//         while (checking < spring_index + num) {
-//             if (springs[checking] == '.') {
-//                 return total;
-//             }
-//             checking++;
-//         }
-//         if (checking == springs_size || springs[checking] != '#') {
-//             total += recurse(checking + 1, constraint_index + 1, to_place - num);   
-//         }
-//     }
-//     return total;
-// }
 
 
 vector<char> springs;
@@ -58,6 +21,16 @@ vector<int> constraints;
 
 vector<vector<int>> can_index_fit_n_springs;
 vector<int64_t> no_hashes_left;
+
+struct pair_hash {
+    template <class T1, class T2>
+    std::size_t operator () (const std::pair<T1,T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
+    }
+};
+unordered_map<pair<int, int>, int64_t, pair_hash> cache;
 void init_precompute() {
     can_index_fit_n_springs.clear();
     no_hashes_left.clear();
@@ -89,6 +62,8 @@ void init_precompute() {
     }
     no_hashes_left.push_back(1);
     no_hashes_left.push_back(1);
+
+    cache.clear();
 }
 
 
@@ -102,6 +77,11 @@ inline int64_t recurse(int spring_index, int constraint_index, int to_place) {
         return 0;
     }
     
+    auto key = make_pair(spring_index, constraint_index);
+    if (cache.find(key) != cache.end()) {
+        return cache[key];
+    }
+
     int64_t total = 0;
     if (springs[spring_index] != '#') {
         total += recurse(spring_index + 1, constraint_index, to_place);
@@ -113,6 +93,8 @@ inline int64_t recurse(int spring_index, int constraint_index, int to_place) {
             total += recurse(spring_index + num + 1, constraint_index + 1, to_place - num);   
         }
     }
+
+    cache[key] = total;
     return total;
 }
 
@@ -125,18 +107,13 @@ int main() {
     auto start = high_resolution_clock::now();
 
     int duplications = 5;
-    // 3 - Total possiblities: 127369793, in 1897ms         (1.9 seconds)
-    // Duplications: 4, Total possiblities: 55726203441, in (923 seconds)
 
     while (getline(file, line)) {
         if (line.length() < 1) {
             continue;
         }
         curr_line++;
-        if (curr_line < 750) {
-            continue;
-        }
-        
+                
         vector<char> springs_file;
         int index = 0;
         while (line[index] != ' ') {
@@ -196,6 +173,47 @@ int main() {
     cout << "Duplications: " << duplications << ", Total possiblities: " << total << ", in " << duration.count() << "ms" << endl;
     return 0;
 }
+
+
+
+
+// int springs_size;
+// vector<char> springs;
+// vector<int> constraints;
+// inline int64_t recurse(int spring_index, int constraint_index, int to_place) {
+//     if (to_place == 0) {
+//         for (; spring_index < springs_size; ++spring_index) {
+//             if (springs[spring_index] == '#') {
+//                 return 0;
+//             }
+//         }
+//         return 1;
+//     }
+//     int spaces_left = springs_size - spring_index;
+//     if (to_place > spaces_left) {
+//         return 0;
+//     }
+    
+//     int64_t total = 0;
+//     if (springs[spring_index] != '#') {
+//         total += recurse(spring_index + 1, constraint_index, to_place);
+//     }
+
+//     int num = constraints[constraint_index];
+//     if (springs[spring_index] != '.') {
+//         int checking = spring_index;
+//         while (checking < spring_index + num) {
+//             if (springs[checking] == '.') {
+//                 return total;
+//             }
+//             checking++;
+//         }
+//         if (checking == springs_size || springs[checking] != '#') {
+//             total += recurse(checking + 1, constraint_index + 1, to_place - num);   
+//         }
+//     }
+//     return total;
+// }
 
 
 // auto last_hash = find(springs_dup.rbegin(), springs_dup.rend(), '#');
