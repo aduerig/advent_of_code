@@ -23,17 +23,17 @@ vector<vector<int>> can_index_fit_n_springs;
 vector<int64_t> no_hashes_left;
 
 struct pair_hash {
-    template <class T1, class T2>
-    std::size_t operator () (const std::pair<T1,T2> &p) const {
-        auto h1 = std::hash<T1>{}(p.first);
-        auto h2 = std::hash<T2>{}(p.second);
-        return h1 ^ h2;
+    std::size_t operator () (const std::pair<int,int> &p) const {
+        return hash<int>{}(p.first) ^ hash<int>{}(p.second);
     }
 };
 unordered_map<pair<int, int>, int64_t, pair_hash> cache;
 void init_precompute() {
     can_index_fit_n_springs.clear();
+    can_index_fit_n_springs.reserve(springs.size());
     no_hashes_left.clear();
+    no_hashes_left.reserve(springs.size() + 2);
+    cache.clear();
 
     for (int spring_index = 0; spring_index < springs.size(); spring_index++) {
         can_index_fit_n_springs.push_back(vector<int>());
@@ -62,8 +62,6 @@ void init_precompute() {
     }
     no_hashes_left.push_back(1);
     no_hashes_left.push_back(1);
-
-    cache.clear();
 }
 
 
@@ -113,7 +111,7 @@ int main() {
             continue;
         }
         curr_line++;
-                
+
         vector<char> springs_file;
         int index = 0;
         while (line[index] != ' ') {
