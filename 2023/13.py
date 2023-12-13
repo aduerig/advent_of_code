@@ -9,55 +9,36 @@ from helpers import *
 filepath = pathlib.Path(__file__)
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
-problems = []
+all_islands = []
 with open(data_file) as f:
-    new = []
-    for line in f.readlines():
-        line = line.strip()
-        if not line:
-            problems.append(new)
-            new = []
-        else:
-            new.append(list(line))
-if new:
-    problems.append(new)
+    for section in f.read().split('\n\n'):
+        new = []    
+        for line in section.splitlines():
+            if line.strip():
+                new.append(list(line))
+        all_islands.append(new)
+
+
+def does_reflect(island, y1, y2):
+    for x1, x2 in zip(range(y1, -1, -1), range(y2, len(island))):
+        if island[x1] != island[x2]:
+            return False
+    return True
 
 
 def rows_above(island):
     answers = []
-    for y1 in range(len(island) - 1):
-        y2 = y1 + 1
-        
-        bad = False
-        y1_iter = y1
-        y2_iter = y2
-        while y1_iter > -1 and y2_iter < len(island):
-            if island[y1_iter] != island[y2_iter]:
-                bad = True
-                break
-            y1_iter -= 1
-            y2_iter += 1
-        if not bad:
+    for y1, y2 in zip(range(len(island)), range(1, len(island))):
+        if does_reflect(island, y1, y2):
             answers.append(y2)
     return answers
 
 
-def get_stuff(island):
+def horizontal_and_vertical(island):
     a = rows_above(island)
-    rotated_island = []
-    for x in range(len(island[0])):
-        new = []
-        for y in range(len(island)):
-            new.append(island[y][x])
-        rotated_island.append(list(reversed(new)))
+    rotated_island = [[island[y][x] for y in reversed(range(len(island)))] for x in range(len(island[0]))]
     b = rows_above(rotated_island)
     return a, b
-
-def switch(island, x, y):
-    if island[y][x] == '#':
-        island[y][x] = '.'
-    else:
-        island[y][x] = '#'
 
 
 def different(orig, new_stuff):
@@ -83,27 +64,30 @@ def different(orig, new_stuff):
             if GOD_NO not in a:
                 return GOD_NO * multiplier
 
-total = 0
-for index, island in enumerate(problems):
-    orig = get_stuff(island)
-    changed_island = [[ele for ele in y] for y in island]
+
+
+def smudge_and_get_answer(island):
+    original_reflections = horizontal_and_vertical(island)
     for y in range(len(island)):
-        should_break = False
         for x in range(len(island[0])):
-            switch(changed_island, x, y)
-            stuff = get_stuff(changed_island)
-            switch(changed_island, x, y)
-
-            ans = different(orig, stuff)
+            changed_island = [[ele for ele in y] for y in island]
+            changed_island[y][x] = {'#': '.', '.': '#'}[changed_island[y][x]]
+            
+            new_reflections = horizontal_and_vertical(changed_island)
+            ans = different(original_reflections, new_reflections)
             if ans is not None:
-                print(f'{index=} - {ans=}, {orig=}, {stuff=}, changed: {x=} {y=}')
-                total += ans
-                should_break = True
-                break
-        if should_break:
-            break
+                return ans
 
-print(total)
+print(sum((smudge_and_get_answer(island) for island in all_islands)))
+
+
+# def different(orig, new):
+#     if any(new) and orig != new:
+#         for index, (a, b) in enumerate(reversed(list(zip(orig, new)))):
+#             if a != b:
+#                 return index * 99 + 1
+
+
 
 # correct part 2: 40995
 
