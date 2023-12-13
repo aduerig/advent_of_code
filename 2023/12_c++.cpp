@@ -125,8 +125,8 @@ int main() {
     auto start = high_resolution_clock::now();
 
     int duplications = 3;
-    // 3 - Total possiblities: 127369793, in 1897ms       (1.9   seconds)
-    // 4 - Total possiblities: 55726203441, in 933061ms   (933 seconds)
+    // 3 - Total possiblities: 127369793, in 1897ms         (1.9 seconds)
+    // Duplications: 4, Total possiblities: 55726203441, in (923 seconds)
 
     while (getline(file, line)) {
         if (line.length() < 1) {
