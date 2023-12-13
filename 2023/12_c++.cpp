@@ -124,7 +124,7 @@ int main() {
     string line;
     auto start = high_resolution_clock::now();
 
-    int duplications = 3;
+    int duplications = 5;
     // 3 - Total possiblities: 127369793, in 1897ms         (1.9 seconds)
     // Duplications: 4, Total possiblities: 55726203441, in (923 seconds)
 
@@ -133,6 +133,9 @@ int main() {
             continue;
         }
         curr_line++;
+        if (curr_line < 750) {
+            continue;
+        }
         
         vector<char> springs_file;
         int index = 0;
