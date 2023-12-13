@@ -137,7 +137,6 @@ int main() {
             constraints_dup.insert(constraints_dup.end(), constraints_file.begin(), constraints_file.end());
         }
 
-        // i think this optimization hardly helps
         auto first = find(springs_dup.begin(), springs_dup.end(), '?');
         int dist_start = (first != springs_dup.end()) ? distance(springs_dup.begin(), first) : -1;
         auto last = find(springs_dup.rbegin(), springs_dup.rend(), '?');
