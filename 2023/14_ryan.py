@@ -10,22 +10,15 @@ from helpers import *
 data_file = filepath.parent.joinpath('14.dat')
 
 
-grid = []
+
 with open(data_file) as f:
-    for line in f.read().splitlines():
-        if line:
-            grid.append(line)
+    grid = [line for line in f.read().splitlines()]
 
-
-is_dot = lambda x: x == '.'
-my_sort = lambda x: ''.join(sorted(x, key=is_dot))
 def west_roll(grid):
-    return ['#'.join(list(map(my_sort, row.split('#')))) for row in grid]
-
+    return ['#'.join([('O' * segment.count('O')) + ('.' * (len(segment) - segment.count('O'))) for segment in row.split('#')]) for row in grid]
 
 def rotate_right(grid):
     return [''.join([grid[y][x] for y in reversed(range(len(grid)))]) for x in range(len(grid[0]))]
-
 
 def roll_all(grid):
     for _ in range(4):
@@ -46,7 +39,4 @@ for i in range(iterations):
     grid = roll_all(grid)
 grid = rotate_right(grid) # turn back to original direction
 
-total = 0
-for index, line in enumerate(grid):
-    total += (len(grid) - index) * line.count('O')
-print(total)
+print(sum([(len(grid) - index) * line.count('O') for index, line in enumerate(grid)]))
