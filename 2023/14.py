@@ -55,9 +55,6 @@ while i < 1000000000:
     cache[key] = i
     i += 1
 
-for line in graph:
-    print(''.join(line))
-
 total = 0
 for index, line in enumerate(graph):
     total += (len(graph) - index) * line.count('O')
