@@ -24,7 +24,6 @@ def north_roll(graph):
                 graph[y][x] = '.'
                 graph[empty][x] = 'O'
                 empty += 1
-
             elif graph[y][x] == '#':
                 empty = y + 1
 
