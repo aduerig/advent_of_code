@@ -28,11 +28,18 @@ seen_depths = set()
 queue = collections.deque([['e', 0]])
 print_blue(f'Looking for goal len of {len(goal)}')
 
+cache = set()
 max_len = 0
 while queue:
     curr, depth = queue.popleft()
     if curr == goal:
         break
+
+    if curr in cache:
+        continue
+
+    cache.add(curr)
+
     if depth not in seen_depths:
         seen_depths.add(depth)
         print(f'{depth=}, {max_len=}')

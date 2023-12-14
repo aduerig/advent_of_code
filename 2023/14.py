@@ -32,14 +32,9 @@ def rotate_right(graph):
 
 
 def roll_all(graph):
-    north_roll(graph)
-    graph = rotate_right(graph)
-    north_roll(graph)
-    graph = rotate_right(graph)
-    north_roll(graph)
-    graph = rotate_right(graph)
-    north_roll(graph)
-    graph = rotate_right(graph)
+    for _ in range(4):
+        north_roll(graph)
+        graph = rotate_right(graph)
     return graph
 
 
