@@ -3,6 +3,7 @@ import sys
 import pathlib
 from queue import PriorityQueue 
 import random
+sys.setrecursionlimit(10000)
   
 
 filepath = pathlib.Path(__file__)
@@ -48,6 +49,30 @@ def can_reduce(chemical):
     return True
 
 
+import functools
+seen = set()
+@functools.cache
+def dfs_left(chemical, goal_chemical):
+    if chemical in seen:
+        return False
+    seen.add(chemical)
+    for resultant_chemicals in mapping.get(chemical, tuple()):
+        if resultant_chemicals[0] == goal_chemical:
+            return True
+        if dfs_left(resultant_chemicals[0], goal_chemical):
+            return True
+    return False
+
+
+def is_possible_left(chemicals, goal_chemicals):
+    global seen
+    for chemical, goal_chem in zip(chemicals, goal_chemicals):
+        if chemical != goal_chem:
+            seen = set()
+            return dfs_left(chemical, goal_chem)
+    return True
+
+
 avaliable = {}
 for chemical in goal_chemicals:
     if not can_reduce(chemical):
@@ -64,6 +89,12 @@ queue.put([0, -1, tuple(['e']), 0, avaliable.copy()])
 cache = set()
 linear_increaser = 1
 max_len = 0
+
+cut_from_no_more = 0
+cut_from_too_long = 0
+cut_from_visited = 0
+cut_from_left_possible = 0
+looked_at = 0
 while not queue.empty():
     # curr, the_len, depth = queue.popleft()
     depth, the_len, curr, _, avaliable = queue.get_nowait()
@@ -72,14 +103,23 @@ while not queue.empty():
         break
 
     if -the_len > len(goal_chemicals):
+        cut_from_too_long += 1
         continue
 
     if curr in cache:
+        cut_from_visited += 1
         continue
     cache.add(curr)
 
+    if not is_possible_left(curr, goal_chemicals):
+        cut_from_left_possible += 1
+        continue
+
+    looked_at += 1
+
     if random.random() < .0001:
         print_blue(f'    random chemical: {"".join(curr)}')
+        print_cyan(f'    {looked_at=:,}, {cut_from_left_possible=:,}, {cut_from_no_more=:,}, {cut_from_too_long=:,}, {cut_from_visited=:,}')
 
     if depth not in seen_depths:
         seen_depths.add(depth)
@@ -99,6 +139,7 @@ while not queue.empty():
                         no_good = True
                         break
             if no_good:
+                cut_from_no_more += 1
                 continue
 
             new = prev + resultant_chemicals + curr[index + 1:]
