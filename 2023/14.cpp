@@ -14,17 +14,6 @@
 
 using namespace std;
 using namespace std::chrono;
-// def north_roll(graph):
-//     for x in range(len(graph[0])):
-//         empty = 0
-//         for y in range(len(graph)):
-//             if graph[y][x] == 'O':
-//                 graph[y][x] = '.'
-//                 graph[empty][x] = 'O'
-//                 empty += 1
-//             elif graph[y][x] == '#':
-//                 empty = y + 1
-
 
 vector<vector<char>> grid;
 inline void roll_up() {
@@ -109,6 +98,12 @@ int main() {
     }
 
     for (size_t i = 0; i < 1000000000; i++) {
+        if (i % 100000 == 0 && i != 0) {
+            auto interim_time = high_resolution_clock::now();
+            auto interim_duration = duration_cast<seconds>(interim_time - start);
+            auto rate = (double) i / (double) interim_duration.count();
+            cout << i << ", " << rate << " iterations/second will take: " << ((1000000000 - i) / rate) / (60 * 60) << " hours to complete" << endl;
+        }
         roll_all();
     }
 
