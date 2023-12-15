@@ -114,7 +114,7 @@ int main() {
 
 
     auto end = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(end - start);
-    cout << total << ", " << duration.count() << "ms taken" << endl;
+    auto duration = duration_cast<seconds>(end - start);
+    cout << total << ", " << duration.count() << " seconds taken" << endl;
     return 0;
 }

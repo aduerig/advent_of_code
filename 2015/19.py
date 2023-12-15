@@ -1,13 +1,27 @@
 # https://adventofcode.com/2023
 import sys
 import pathlib
-import collections
+from queue import PriorityQueue 
+import random
+  
 
 filepath = pathlib.Path(__file__)
 sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
+
+def split_into_chemicals(string):
+    arr = []
+    i = 0
+    while i < len(string):
+        a = string[i]
+        if i != len(string) - 1 and string[i+1].islower():
+            a += string[i+1]
+            i += 1
+        arr.append(a)
+        i += 1
+    return tuple(arr)
 
 mapping = {}
 with open(data_file) as f:
@@ -20,37 +34,77 @@ with open(data_file) as f:
         fr, to = line.split(' => ')
         if fr not in mapping:
             mapping[fr] = []
-        mapping[fr].append(to)
+        mapping[fr].append(split_into_chemicals(to))
+
+goal_chemicals = split_into_chemicals(goal)
+
+def can_reduce(chemical):
+    if chemical not in mapping:
+        return False
+    
+    for sub in mapping[chemical]:
+        if chemical not in sub:
+            return False
+    return True
+
+
+avaliable = {}
+for chemical in goal_chemicals:
+    if not can_reduce(chemical):
+        avaliable[chemical] = goal_chemicals.count(chemical)
+print(avaliable)
+print(f'Win when have: {len(goal_chemicals)} chemicals')
 
 seen_depths = set()
-queue = collections.deque([['e', 0]])
-print_blue(f'Looking for goal len of {len(goal)}')
+
+queue = PriorityQueue()
+queue.put([0, -1, tuple(['e']), 0, avaliable.copy()])
+# queue = collections.deque([['e', 0]])
 
 cache = set()
+linear_increaser = 1
 max_len = 0
-while queue:
-    curr, depth = queue.popleft()
-    if curr == goal:
+while not queue.empty():
+    # curr, the_len, depth = queue.popleft()
+    depth, the_len, curr, _, avaliable = queue.get_nowait()
+    if curr == goal_chemicals:
+        print_green('SUCCESS')
         break
+
+    if -the_len > len(goal_chemicals):
+        continue
 
     if curr in cache:
         continue
-
     cache.add(curr)
+
+    if random.random() < .0001:
+        print_blue(f'    random chemical: {"".join(curr)}')
 
     if depth not in seen_depths:
         seen_depths.add(depth)
         print(f'{depth=}, {max_len=}')
 
     max_len = max(max_len, len(curr))
-    for index in range(len(curr)):
+    for index, chemical in enumerate(curr):
         prev = curr[:index]
-        curr_till_end = curr[index:]
-        for input, outputs in mapping.items():
-            if curr_till_end.startswith(input):
-                rest = curr[index + len(input):]
-                for out in outputs:
-                    queue.append([prev + out + rest, depth + 1])
+        for resultant_chemicals in mapping.get(chemical, tuple()):
+            new_avaliable = avaliable.copy()
+            
+            no_good = False
+            for sub_chemical in resultant_chemicals:
+                if sub_chemical in new_avaliable:
+                    new_avaliable[sub_chemical] -= 1
+                    if new_avaliable[sub_chemical] < 0:
+                        no_good = True
+                        break
+            if no_good:
+                continue
+
+            new = prev + resultant_chemicals + curr[index + 1:]
+            queue.put([depth + 1, -len(new), new, linear_increaser, new_avaliable])
+            linear_increaser += 1
+
 print(f'{depth} - produced: {curr}')
 
 # part 1
