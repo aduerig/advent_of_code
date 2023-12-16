@@ -10,6 +10,8 @@ from helpers import *
 
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
+
+# i deleted part 1 but its basically the same, just top left ot the right
 grid = []
 with open(data_file) as f:
     for line in f.read().splitlines():
