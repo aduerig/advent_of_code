@@ -18,10 +18,6 @@ with open(data_file) as f:
 from queue import PriorityQueue
 
 
-queue = PriorityQueue()
-queue.put((0, (0, 0), (1, 0), 0))
-queue.put((0, (0, 0), (0, 1), 0))
-
 
 following = {
     (1, 0): [(0, 1), (0, -1), (1, 0)],
@@ -30,6 +26,9 @@ following = {
     (0, -1): [(0, -1), (1, 0), (-1, 0)],
 }
 
+queue = PriorityQueue()
+queue.put((0, (0, 0), (1, 0), 0))
+queue.put((0, (0, 0), (0, 1), 0))
 
 seen = set()
 while not queue.empty():
