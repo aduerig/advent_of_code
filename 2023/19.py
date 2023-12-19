@@ -1,6 +1,8 @@
 # https://adventofcode.com/2023
 import pathlib
 import sys
+import functools
+import time
 
 filepath = pathlib.Path(__file__)
 sys.path.append(str(filepath.parent.parent))
@@ -9,9 +11,10 @@ from helpers import *
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
 
+start_time = time.time()
+
 def to_range(rule):
     condition, next_stage = rule.split(':')
-    
     if '>' in rule:
         name, amt = condition.split('>')
         amt = int(amt)
@@ -23,22 +26,17 @@ def to_range(rule):
     return name, condition_range, next_stage
 
 
-
 all_workflows = {}
 with open(data_file) as f:
     workflows, _parts = f.read().split('\n\n')
-
     for workflow in workflows.splitlines():
         start = workflow.index('{')
         name = workflow[:start]
         all_workflows[name] = []
         for rule in workflow[start + 1:-1].split(','):
-            
             if '>' in rule or '<' in rule:
                 rule = to_range(rule)
-
             all_workflows[name].append(rule)
-
 
 
 def range_intersect(r1, r2):
@@ -48,28 +46,22 @@ def range_intersect(r1, r2):
     return r3
 
 
-def get_range_split(curr_range, range_condition):
-    intersection = range_intersect(curr_range, range_condition)
-    if intersection is None:
-        return None, None
+def get_range_split(source, condition):
+    passes = range_intersect(source, condition)
+    if passes is None:
+        return [], []
     
-
-    if intersection == curr_range:
-        return [curr_range], []
-    elif intersection[0] == curr_range[0]:
-        return [intersection], [(intersection[1] + 1, curr_range[1])]
-    elif intersection[1] == curr_range[1]:
-        return [intersection], [(curr_range[0], intersection[0] - 1)]
-    return [intersection], [(range_condition[0], intersection[0] - 1), (intersection[1] + 1, range_condition[1])]
+    if passes == source:
+        return [source], []
+    elif passes[0] == source[0]:
+        return [passes], [(passes[1] + 1, source[1])]
+    elif passes[1] == source[1]:
+        return [passes], [(source[0], passes[0] - 1)]
+    return [passes], [(condition[0], passes[0] - 1), (passes[1] + 1, condition[1])]
 
 
 def perms(parts):
-    vals = list(parts.values())
-    start, end = vals[0]
-    total = (end - start) + 1
-    for start, end in vals[1:]:
-        total *= (end - start) + 1
-    return total
+    return functools.reduce(lambda a, b: a * b, [(end - start) + 1 for start, end in parts.values()])
 
 
 def accepted(parts, stage='in', index=0):
@@ -77,34 +69,27 @@ def accepted(parts, stage='in', index=0):
         return perms(parts)
     if stage == 'R':
         return 0
-    
-    for start, end in parts.values():
-        if end < start:
-            print(f'{start, end}')
-            exit()
-    
-
+        
     rule = all_workflows[stage][index]
-    if type(rule) != tuple:
+    if not isinstance(rule, tuple):
         return accepted(parts, rule)
             
     rating_name, range_condition, if_true_stage = rule
     existing_range = parts[rating_name]
 
     in_ranges, out_ranges = get_range_split(existing_range, range_condition)
-    print(f'{existing_range} - {range_condition} - {in_ranges} - {out_ranges}')
 
+    save = parts[rating_name]
     total = 0
     if in_ranges:
-        correct_version = parts.copy()
-        correct_version[rating_name] = in_ranges[0]
-        total += accepted(correct_version, if_true_stage)
+        parts[rating_name] = in_ranges[0]
+        total += accepted(parts, if_true_stage)
+        parts[rating_name] = save
 
-    if out_ranges:
-        for out_range in out_ranges:
-            false_version = parts.copy()
-            false_version[rating_name] = out_range
-            total += accepted(false_version, stage, index + 1)
+    for out_range in out_ranges:
+        parts[rating_name] = out_range
+        total += accepted(parts, stage, index + 1)
+        parts[rating_name] = save
         
     return total
 
@@ -114,18 +99,12 @@ parts = {
     'a': (1, 4000),
     's': (1, 4000),
 }
+# 125744206494820 right
+# total_perms (4 1-4000) = 255616175976000
 
-print(accepted(parts))
+print_blue(f'Took: {time.time() - start_time:.8f} seconds')
+print_green(accepted(parts))
 
-
-
-
-
-
-
-total_perms = 255616175976000
-# accepted:   167409079868000
-# rejected:   88207096108000
 
 
 
