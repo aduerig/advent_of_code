@@ -19,7 +19,6 @@ dirs_index = [
 ]
 
 instructions = []
-pos = (0, 0)
 with open(data_file) as f:
     for line in f.read().splitlines():
         _letter, _amt_flat, color = line.split()
@@ -27,16 +26,51 @@ with open(data_file) as f:
         instructions.append((amt_from_hex, dirs_index[direction_index]))
 
 
-corners = []
-
-all_visited = set([pos])
+actual_grid = {}
+pos = (0, 0)
+corners = set([pos])
 for index, (amt, dpos) in enumerate(instructions):
     dx, dy = dpos
     
     print(f'{index+1}/{len(instructions)} - {amt} - {dpos}')
-    for i in range(int(amt)):
-        new_pos = pos[0] + dx, pos[1] + dy
+    pos = (pos[0] + (dx * amt)), (pos[1] + (dy * amt))
+    corners.add(pos)
 
-        all_visited.add(new_pos)
-print(new_pos)
+    actual_grid[pos] = True
+
+
+print(pos)
+print(corners)
+
+
+def find_smallest(corners, given, given_index, bigger_than, bigger_index):
+    found = None
+    for point in corners:
+        if point[given_index] != given:
+            continue
+        if point[bigger_index] <= bigger_than:
+            continue
+        
+        if not found or point[bigger_index] < found[bigger_index]:
+            found = point
+    return found
+
+unused = set(corners)
+while unused:
+    for point in unused:
+        unused.remove(point)
+        break
+
+    x, y = point
+    right_point = find_smallest(corners, y, 1, x, 0)
+    down_point = find_smallest(corners, y, 1, x, 0)
+    down_right_point = (right_point, down_point)
+
+    if not right_point or not down_point or not down_right_point:
+        continue
+
+
+
+
+
 # test is: 952408144115
