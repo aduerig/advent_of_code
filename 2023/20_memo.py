@@ -9,7 +9,7 @@ filepath = pathlib.Path(__file__)
 sys.path.append(str(filepath.parent.parent))
 from helpers import * 
 
-data_file = filepath.parent.joinpath(filepath.stem + '.dat')
+data_file = filepath.parent.joinpath('20.dat')
 
 
 
@@ -32,19 +32,10 @@ with open(data_file) as f:
 
         name = first[1:]
         if first.startswith('%'):
-            if name in flips:
-                print_red('Multiple flips?')
-                exit()
             flips[name] = second_arr
         elif first.startswith('&'):
-            if name in conjunction_outputs:
-                print_red('Multiple conjunction_outputs?')
-                exit()
             conjunction_outputs[name] = second_arr
             conjunction_inputs[name] = set()
-        else:
-            print_red(f'IDK - {line}')
-
 
 for input_name, arr_of_outputs in list(flips.items()) + list(conjunction_outputs.items()):
     for output_name in arr_of_outputs:
@@ -52,13 +43,6 @@ for input_name, arr_of_outputs in list(flips.items()) + list(conjunction_outputs
             conjunction_inputs[output_name].add(input_name)
 
 
-# 281,474,976,710,656
-# 1,000,537,722
-
-# 281474976710656
-# 1000537722
-
-@profile
 def solve(initial_queue, num_iters):
     memory = {}
     for name in flips:
