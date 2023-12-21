@@ -41,20 +41,20 @@ inline bool in(unordered_set<string>& the_set, string the_ele) {
     return the_set.find(the_ele) != the_set.end();
 }
 
-struct bfs_node {
-    int from_name;
-    int name;
-    int signal;
-};
+// struct bfs_node {
+//     int from_name;
+//     int name;
+//     int signal;
+// };
 
 
-void print_bfs_node(unordered_map<int, string>& the_map, bfs_node& node) {
-    string to_print = "high";
-    if (node.signal == 0) {
-        to_print = "low";
-    }
-    cout << the_map[node.from_name] << " -" << to_print << "->" << " " << the_map[node.name] << endl;
-}
+// void print_bfs_node(unordered_map<int, string>& the_map, bfs_node& node) {
+//     string to_print = "high";
+//     if (node.signal == 0) {
+//         to_print = "low";
+//     }
+//     cout << the_map[node.from_name] << " -" << to_print << "->" << " " << the_map[node.name] << endl;
+// }
 
 
 int main() {
@@ -101,7 +101,6 @@ int main() {
         }
     }
 
-
     unordered_map<string, int> string_to_int {{ string("broadcaster"), 0 }};
     unordered_map<int, string> int_to_string {{ 0, string("broadcaster") }};
     int unseen_int = 1;
@@ -125,6 +124,15 @@ int main() {
     vector<bool> is_flip_flop(unseen_int, true);
     for (auto& name: conditionals) {
         is_flip_flop[string_to_int[name]] = false;
+    }
+
+    vector<vector<int>> needed_for_conditional(unseen_int, vector<int>());
+    for (auto& key_value_pair: all_outputs) {
+        for (auto& output_name: key_value_pair.second) {
+            if (!is_flip_flop[string_to_int[output_name]]) {
+                needed_for_conditional[string_to_int[output_name]].push_back(string_to_int[key_value_pair.first]);
+            }
+        }
     }
 
     // deque<bfs_node> my_queue_init;
@@ -205,7 +213,7 @@ int main() {
 
         lows += 1;
         while (!iter_queue.empty()) {
-            auto& [from_name, name, signal] = iter_queue.front();
+            auto [from_name, name, signal] = iter_queue.front();
 
             // bfs_node node = iter_queue.front();
             // int from_name = node.from_name;
@@ -229,7 +237,7 @@ int main() {
                     continue;
                 }
                 memory_flips[name] = 1 - memory_flips[name];
-                for (auto& sub_name: all_output_ints[name]) {
+                for (auto sub_name: all_output_ints[name]) {
                     iter_queue.push_back(make_tuple(name, sub_name, memory_flips[name]));
                     // iter_queue.push_back({
                     //     .from_name = name,
@@ -241,14 +249,14 @@ int main() {
             else {
                 memory_conditionals[name][from_name] = signal;
                 int to_send_signal = 0;
-                for (auto& ele: memory_conditionals[name]) {
-                    if (ele == 0) {
+                for (auto ele: needed_for_conditional[name]) {
+                    if (memory_conditionals[name][ele] == 0) {
                         to_send_signal = 1;
                         break;
                     }
                 }
 
-                for (auto& sub_name: all_output_ints[name]) {
+                for (auto sub_name: all_output_ints[name]) {
                     iter_queue.push_back(make_tuple(name, sub_name, to_send_signal));
                     // iter_queue.push_back({
                     //     .from_name = name,
