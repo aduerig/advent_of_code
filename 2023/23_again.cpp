@@ -22,17 +22,8 @@ vector<pair<int, int>> dirs = {
 };
 
 
-int64_t nodes = 0;
 auto start = high_resolution_clock::now();
 inline int recurse(vector<vector<char>>& grid, vector<vector<bool>>& visited, pair<int, int>& pos, pair<int, int>& end, int steps) {
-    nodes++;
-    if (nodes % 100000 == 0 && nodes != 0) {
-        auto end = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(end - start);
-        auto rate = nodes / ((float) duration.count() / 1000);
-        cout << nodes << " nodes explored. " << duration.count() << " milliseconds taken so far. " << rate << " nodes per second." << endl;
-    }
-
     if (pos == end) {
         return steps;
     }
