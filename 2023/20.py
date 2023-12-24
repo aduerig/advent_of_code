@@ -13,6 +13,7 @@ data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
 
 
+
 flips = {}
 conjunction_inputs = {}
 conjunction_outputs = {}
@@ -74,6 +75,7 @@ def solve(initial_queue, num_iters):
     highs = 0
     pressed = 1
     start_time = time.time()
+    to_track = {}
     while pressed < num_iters + 1:
         # low_pulses_recieved = {}
         low_rx_pulses = 0
@@ -96,6 +98,11 @@ def solve(initial_queue, num_iters):
 
         while iter_queue:
             from_name, name, signal = iter_queue.popleft()
+
+            if name == 'tg' and signal == 1:
+                if from_name not in to_track:
+                    to_track[from_name] = []
+                to_track[from_name].append(pressed)
 
             if name == 'rx' and signal == 0:
                 low_rx_pulses += 1
@@ -120,6 +127,8 @@ def solve(initial_queue, num_iters):
                     if i == 0:
                         new_signal = 1
                         break
+
+
                 for sub_name in conjunction_outputs[name]:
                     new_state = (name, sub_name, new_signal)
                     iter_queue.append(new_state)
@@ -130,7 +139,29 @@ def solve(initial_queue, num_iters):
         # lows += sum(low_pulses_recieved.values())
 
         pressed += 1
+
+        print()
+        for k, v in to_track.items():
+            diffs = []
+            for a, b in zip(v, v[1:]):
+                diffs.append(b - a)
+            print(f'{k} - {v}')
+            print(f'    {diffs}')
     return lows * highs
+
+
+# above prints were
+# tf - [3923, 7846, 11769, 15692, 19615, 23538, 27461, 31384]
+#     [3923, 3923, 3923, 3923, 3923, 3923, 3923]
+# db - [3929, 7858, 11787, 15716, 19645, 23574, 27503, 31432]
+#     [3929, 3929, 3929, 3929, 3929, 3929, 3929]
+# vq - [4007, 8014, 12021, 16028, 20035, 24042, 28049, 32056]
+#     [4007, 4007, 4007, 4007, 4007, 4007, 4007]
+# ln - [4091, 8182, 12273, 16364, 20455, 24546, 28637, 32728]
+#     [4091, 4091, 4091, 4091, 4091, 4091, 4091]
+# then math.lcm(3923, 3929, 4007, 4091)
+# 252,667,369,442,479
+# 281,474,976,710,656
 
 print_yellow(solve(queue, float('inf')))
 # print_yellow(solve(queue, 1000))
