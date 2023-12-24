@@ -163,6 +163,8 @@ def solve(initial_queue, num_iters):
 # 252,667,369,442,479
 # 281,474,976,710,656
 
+# 281,474,976,710,656 / 4462390
+
 print_yellow(solve(queue, float('inf')))
 # print_yellow(solve(queue, 1000))
 
