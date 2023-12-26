@@ -1,4 +1,5 @@
 .pytest_cache
+parser_temp.py
 __pycache__
 ryan*
 other*
