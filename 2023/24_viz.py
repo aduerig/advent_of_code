@@ -263,12 +263,12 @@ def print_grid(t=0, axis='x', my_collider=None, highlight_stone=None, cost_for_c
 #     ),
 # )
 
-# cost: 195,689
+# cost: 0 :)
 my_collider = (
     (
-        291669802653686,
-        103597826799890,
-        251542427650302,
+        291669802654110,
+        103597826800230,
+        251542427650413,
     ), 
     (
         -11,
@@ -276,6 +276,7 @@ my_collider = (
         91,
     ),
 )
+
 
 # c = lowest_dist_pos(*my_collider[0])[1]
 # print(c)

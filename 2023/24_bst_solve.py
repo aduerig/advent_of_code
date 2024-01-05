@@ -128,10 +128,6 @@ def lowest_dist_pos(x, y, z):
     return lowest_collider
 
 
-((291669802654110, 103597826800230, 251542427650413), (-11, 330, 91))
-
-291669802654110 + 103597826800230 + 251542427650413
-
 def total_cost_collider(collider):
     return sum([inner_bst(collider, stone, 0, 2000000080040) for stone in stones])
 
