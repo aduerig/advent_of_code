@@ -87,14 +87,20 @@ def collides(s1, s2, quiet=True):
     return True
 
 
-x_limits = [100000000000000, 600000000000000]
-y_limits = [50000000000000, 200000000000000]
-z_limits = [105000000000000, 655000000000000]
+
+x_limits = [288000000000000, 292000000000000]
+y_limits = [10000000000000, 110000000000000]
+
+z_limits = [251542205810546, 251542205810546]
+# z_limits = [245000000000000, 265000000000000]
+z_limits = [235000000000000, 255000000000000]
 pos_limits = [x_limits, y_limits, z_limits]
 
-x_vel_limits = [-40, 40]
-y_vel_limits = [300, 360]
-z_vel_limits = [60, 90]
+
+# best collider is: ((291638374328611, 102499999999999, 251389770507810), (-11, 319, 88)), cost is: 1378740501490319
+x_vel_limits = [-12, -8]
+y_vel_limits = [329, 338]
+z_vel_limits = [85, 100]
 vel_limits = [x_vel_limits, y_vel_limits, z_vel_limits]
 
 
@@ -105,64 +111,58 @@ def get_midpoint(pair):
 def find_best_positions(pos_limits):
     index = 0
     start_time = time.time()
+    costs_and_collider = [[-1, -1], [-1, -1], [-1, -1]]
     while any([l <= r for l, r in pos_limits]):
-        print(f'find_best_positions: time elapsed: {time.time() - start_time}. Starting {index=} high level loop of all 3 dims, {pos_limits}')
+        print(f'find_best_positions: time elapsed: {time.time() - start_time}. Starting {index=} high level loop of all 3 dims, {pos_limits}, best collider last loop: {costs_and_collider[1][1]}, cost: {costs_and_collider[1][0]:,}')
         for dim, (l, r) in enumerate(pos_limits):
             if l > r:
                 continue
 
             curr_position = [get_midpoint(pos_limits[0]), get_midpoint(pos_limits[1]), get_midpoint(pos_limits[2])]
 
-            mid_for_dim = (r + l) // 2
+            mid_for_dim = (l + r) // 2
             to_compute = [mid_for_dim - 1, mid_for_dim, mid_for_dim + 1]
-            dists = []
+            costs_and_collider = []
             for relevant_pos_for_dim in to_compute:
                 curr_position[dim] = relevant_pos_for_dim
-                dists.append(lowest_dist_pos(*curr_position)[0])
+                costs_and_collider.append(lowest_dist_pos(*curr_position))
             
+            dists = [cost for cost, collider in costs_and_collider]
             if dists[0] < dists[1]:
                 pos_limits[dim][1] = mid_for_dim - 1
             elif dists[2] < dists[1]:
-                pos_limits[dim][1] = mid_for_dim + 1
+                pos_limits[dim][0] = mid_for_dim + 1
             else:
                 print_green(f'find_best_positions: {dim_label(dim)} somehow this is the best: {mid_for_dim}, existing range: {pos_limits[dim]}, voiding this dim.')
-                pos_limits[dim] = (mid_for_dim, mid_for_dim - 1)
+                pos_limits[dim] = [mid_for_dim, mid_for_dim - 1]
         index += 1
     (_, x), (_, y), (_, z) = pos_limits
-    collider = lowest_dist_pos(x, y, z)
-    print(f'Finished: {pos_limits}, best collider is: {collider}')
+    cost, collider = lowest_dist_pos(x, y, z)
+    print_green(f'Finished: {pos_limits=}')
+    print_blue(f'best collider is: {collider}, cost is: {cost}')
 
 
-# !TODO somehow optimize below to hill climbing? 
+# !TODO somehow optimize below to hill climbing?
 def lowest_dist_pos(x, y, z):
     lowest_collider = (float('inf'), ((0, 0, 0), (0, 0, 0)))
     for xvel in range(x_vel_limits[0], x_vel_limits[1]):
         for yvel in range(y_vel_limits[0], y_vel_limits[1]):
             for zvel in range(z_vel_limits[0], z_vel_limits[1]):
-                if 0 in [xvel, yvel, zvel]:
-                    continue
                 collider = ((x, y, z), (xvel, yvel, zvel))
                 cost = total_cost_collider(collider)
                 lowest_collider = min(lowest_collider, (cost, collider))
     return lowest_collider
 
 
-# !TODO check this t range
 def total_cost_collider(collider):
-    cost = 0
-    for stone in stones:
-        cost += inner_bst(collider, stone, 0, 2000000080040) 
-    return cost
-    
+    return sum([inner_bst(collider, stone, 0, 2000000080040) for stone in stones])
+
 
 # search for the lowest t between 2 stones in a loop
 def inner_bst(collider, stone, left, right):
     while left <= right:
         mid = (left + right) // 2
-        to_compute = [mid - 1, mid, mid + 1]
-        costs = []
-        for t in to_compute:
-            costs.append(get_cost(t, collider, stone))
+        costs = [get_cost(t, collider, stone) for t in [mid - 1, mid, mid + 1]]
 
         if costs[0] < costs[1]:
             right = mid - 1
@@ -177,12 +177,6 @@ def inner_bst(collider, stone, left, right):
 def get_cost(t, collider, stone):
     (x1, y1, z1), (xvel1, yvel1, zvel1) = collider
     (x2, y2, z2), (xvel2, yvel2, zvel2) = stone
-
-    cost = 0
-    cost += abs((t * xvel1 + x1) - (t * xvel2 + x2))
-    cost += abs((t * yvel1 + y1) - (t * yvel2 + y2))
-    cost += abs((t * zvel1 + z1) - (t * zvel2 + z2))
-    return cost
-
+    return abs((t * xvel1 + x1) - (t * xvel2 + x2)) + abs((t * yvel1 + y1) - (t * yvel2 + y2)) + abs((t * zvel1 + z1) - (t * zvel2 + z2))
 
 find_best_positions(pos_limits)

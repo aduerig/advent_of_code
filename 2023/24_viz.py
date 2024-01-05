@@ -27,9 +27,6 @@ for dim in [0, 1, 2]:
         exist.add(stone[0][dim])
 
 
-stones_by_y = sorted(stones, key=lambda x: x[0][1])
-
-
 def dim_label(dim):
     return ['x', 'y', 'z'][dim]
 
@@ -44,7 +41,7 @@ def scale(min_n, max_n, n):
 
 # search for the lowest t between 2 stones in a loop
 def inner_bst(collider, stone, left, right):
-    print(f'starting inner_bst: {id(stone)}')
+    # print(f'starting inner_bst: {id(stone)}')
     while left <= right:
         mid = (left + right) // 2
         to_compute = [mid - 1, mid, mid + 1]
@@ -57,7 +54,7 @@ def inner_bst(collider, stone, left, right):
         elif costs[2] < costs[1]:
             left = mid + 1
         else:
-            print_green(f'inner_bst: somehow this is the best... {(left, right)}, {mid=}, {costs}, voiding this')
+            # print_green(f'inner_bst: somehow this is the best... {(left, right)}, {mid=}, {costs}, voiding this')
             left = mid
             right = mid - 1
     return (get_cost(left, collider, stone), t)
@@ -74,7 +71,27 @@ def get_cost(t, collider, stone):
     return cost
 
 
-def print_grid(t=0, axis='x', my_collider=None, highlight_stone=None):
+def total_cost_collider(collider):
+    return sum([inner_bst(collider, stone, 0, 2000000080040)[0] for stone in stones])
+
+
+x_vel_limits = [-20, 20]
+y_vel_limits = [310, 350]
+z_vel_limits = [65, 80]
+def lowest_dist_pos(x, y, z):
+    lowest_collider = (float('inf'), ((0, 0, 0), (0, 0, 0)))
+    for xvel in range(x_vel_limits[0], x_vel_limits[1]):
+        for yvel in range(y_vel_limits[0], y_vel_limits[1]):
+            for zvel in range(z_vel_limits[0], z_vel_limits[1]):
+                if 0 in [xvel, yvel, zvel]:
+                    continue
+                collider = ((x, y, z), (xvel, yvel, zvel))
+                cost = total_cost_collider(collider)
+                lowest_collider = min(lowest_collider, (cost, collider))
+    return lowest_collider
+
+
+def print_grid(t=0, axis='x', my_collider=None, highlight_stone=None, cost_for_collided=None):
     if axis == 'x':
         dim = 0
     elif axis == 'z':
@@ -138,8 +155,8 @@ def print_grid(t=0, axis='x', my_collider=None, highlight_stone=None):
 
                 char = ''
                 if my_collider in col and highlight_stone in col:
-                    color = green
-                    char = '█'
+                    color = lambda x: x
+                    char = '😮'
                 elif highlight_stone in col:
                     color = yellow
                     char = '█'
@@ -168,45 +185,140 @@ def print_grid(t=0, axis='x', my_collider=None, highlight_stone=None):
         # if maxes[dim] != -float('inf'):
         #     to_print.append(f'{maxes[dim]:>8}, {mins[dim]:>8}')
         print(''.join(to_print))
-    print(f'Showing y and {axis}, t = {t}. {stone_y_index=}. Total cost of collider: {total_cost:,}')
+    print(f'Showing y and {axis}, t = {t}. Total cost of collider: {total_cost:,}')
     print(f'x: {abs_mins[0]:,} - {abs_maxs[0]:,}, y: {abs_mins[1]:,} - {abs_maxs[1]:,}, z: {abs_mins[2]:,} - {abs_maxs[2]:,}')
     print(f'{cxvel=}, {cyvel=}, {czvel=}')
 
+    if cost_for_collided is not None:
+        print_red(f'{wanted_t_index=}. {cost_for_collided=:,}')
 
-# things move meaningfully at ~1000000000 (1,000,000,000)
-# most have been hit by       ~759460080040 (759,460,080,040)
 
-t = 0
-dim = 'x'
 
-my_collider = (
-    (
-        300000000000000, 
-        100000000000000,
-        255000000000000,
-    ), 
-    (
-        -12,
-        330,
-        70,
-    ),
-)
-# y def positive, z probably positive, x not sure, maybe negative
+# original, by eye
+    # conclusions about with eye: y def positive, z probably positive, x not sure, maybe negative
+    # things move meaningfully at ~1000000000 (1,000,000,000)
+    # most have been hit by       ~759460080040 (759,460,080,040)
+    # cost: 4,610,000,502,923,827
+# my_collider = (
+#     (
+#         300000000000000, 
+#         100000000000000,
+#         255000000000000,
+#     ), 
+#     (
+#         -12,
+#         330,
+#         70,
+#     ),
+# )
 
-# def total_cost_collider(collider):
-#     cost = 0
-#     for stone in stones:
-#         sub_cost, best_t = inner_bst(collider, stone, 0, 2000000080040)
-#         cost += sub_cost
-#     return cost
-# total_cost = total_cost_collider(my_collider)
-total_cost = 0
+
+# cost: 675,252,312,003,545
+# my_collider = (
+#     (
+#         290457153320311,
+#         104499999999999,
+#         251389770507811,
+#     ), 
+#     (
+#         -9,
+#         325,
+#         88,
+#     ),
+# )
+
+
+
+# cost: 169,802,055,732,096
+# my_collider = (
+#     (
+#         291056213378905,
+#         105156249999999,
+#         252282714843749,
+#     ), 
+#     (
+#         -10,
+#         328,
+#         90,
+#     ),
+# )
+
+
+# cost: 167,424,259,206,369
+# my_collider = (
+#     (
+#         291110839843749,
+#         104218749999999,
+#         250982761383055,
+#     ), 
+#     (
+#         -10,
+#         329,
+#         92,
+#     ),
+# )
+
+# cost: 167,424,259,206,369
+# my_collider = (
+#     (
+#         291093750000000,
+#         104062500000000,
+#         251562500000000,
+#     ), 
+#     (
+#         -10,
+#         329,
+#         91,
+#     ),
+# )
+
+# cost: 53,466,768,727,427
+# my_collider = (
+#     (
+#         291669830322265,
+#         102968749999999,
+#         251542352437971,
+#     ), 
+#     (
+#         -11,
+#         331,
+#         91,
+#     ),
+# )
+
+
+
+
+# c = lowest_dist_pos(*my_collider[0])[1]
+# print(c)
+
+def total_cost_collider(collider):
+    cost = 0
+    for stone in stones:
+        sub_cost, best_t = inner_bst(collider, stone, 0, 2000000080040)
+        cost += sub_cost
+    return cost
+total_cost = total_cost_collider(my_collider)
 
 last_change = 3000000000
 
 
-stone_y_index = 0
+all_best_ts = []
+for stone in stones:
+    cost, best_t = inner_bst(my_collider, stone, 0, 2000000080040)
+    all_best_ts.append((best_t, cost, stone))
+all_best_ts.sort()
 
+stringified_t_digits = []
+for tuple_thing in all_best_ts:
+    stringified_t_digits.append(len(str(tuple_thing[0])))
+stringified_t_digits.sort()
+print(f'{stringified_t_digits}')
+
+wanted_t_index = 0
+
+t = 0
+dim = 'x'
 print_grid(t=t, axis=dim, my_collider=my_collider)
 while True:
     ok = input('')
@@ -224,17 +336,112 @@ while True:
         t += last_change
         print_grid(t=t, axis=dim, my_collider=my_collider)
     elif not ok.strip() and last_change is not None:
-        if stone_y_index < len(stones_by_y):
-            stone_y_index += 1
-            t = inner_bst(my_collider, stones_by_y[stone_y_index], 0, 2000000080040)[1]
-            print_grid(t=t, axis=dim, my_collider=my_collider, highlight_stone=stones_by_y[stone_y_index])
+        if wanted_t_index < len(stones) - 1:
+            wanted_t_index += 1
+            t = all_best_ts[wanted_t_index][0]
+            print_grid(t=t, axis=dim, my_collider=my_collider, highlight_stone=all_best_ts[wanted_t_index][2], cost_for_collided=all_best_ts[wanted_t_index][1])
     elif ok.strip() == 'u':
-        if stone_y_index > 0:
-            stone_y_index -= 1
-            t = inner_bst(my_collider, stones_by_y[stone_y_index], 0, 2000000080040)[1]
-            print_grid(t=t, axis=dim, my_collider=my_collider, highlight_stone=stones_by_y[stone_y_index])
+        if wanted_t_index > 0:
+            wanted_t_index -= 1
+            t = all_best_ts[wanted_t_index][0]
+            print_grid(t=t, axis=dim, my_collider=my_collider, highlight_stone=all_best_ts[wanted_t_index][2], cost_for_collided=all_best_ts[wanted_t_index][1])
     elif ok.strip() == 'a':
         t += last_change
         print_grid(t=t, axis=dim, my_collider=my_collider)
     else:
         print_red(f'didnt understand {ok}')
+
+# potentially a better vel? (-20, 332, 79)), found by running above
+        
+
+# my_collider = (
+#     (
+#         (303124999999998 + 287500000000000) // 2, 
+#         (125000000000001 + 129687499999999) // 2, 
+#         (259687500000000 + 276874999999998) // 2, 
+#     ), 
+#     (
+#         -12,
+#         330,
+#         70,
+#     ),
+# )
+        
+
+
+
+
+
+
+# cost: 2,137,913,926,411,860
+# my_collider = (
+#     (
+#         291680906093095,
+#         125000000000001,
+#         261284666061400,
+#     ), 
+#     (
+#         -11,
+#         310,
+#         79,
+#     ),
+# )
+
+
+# cost: 1,649,869,568,620,495
+# my_collider = (
+#     (
+#         292402839660642,
+#         125000000000000,
+#         257318763732907,
+#     ), 
+#     (
+#         -12,
+#         304,
+#         84,
+#     ),
+# )
+
+# cost: 1,607,903,794,208,109
+# my_collider = (
+#     (
+#         291638374328611,
+#         102499999999999,
+#         251389770507811,
+#     ), 
+#     (
+#         -11,
+#         319,
+#         84,
+#     ),
+# )
+
+
+# cost: 924,596,141,549,029
+# my_collider = (
+#     (
+#         291638374328611,
+#         104499999999999,
+#         251389770507811,
+#     ), 
+#     (
+#         -8,
+#         325,
+#         88,
+#     ),
+# )
+
+
+# cost: 675,252,312,003,545
+# my_collider = (
+#     (
+#         290457153320311,
+#         104499999999999,
+#         251389770507811,
+#     ), 
+#     (
+#         -9,
+#         325,
+#         88,
+#     ),
+# )
