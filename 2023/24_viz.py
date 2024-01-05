@@ -71,6 +71,12 @@ def get_cost(t, collider, stone):
     return cost
 
 
+def get_cost_by_dim(t, collider, stone):
+    (x1, y1, z1), (xvel1, yvel1, zvel1) = collider
+    (x2, y2, z2), (xvel2, yvel2, zvel2) = stone
+    return [abs((t * xvel1 + x1) - (t * xvel2 + x2)), abs((t * yvel1 + y1) - (t * yvel2 + y2)), abs((t * zvel1 + z1) - (t * zvel2 + z2))]
+
+
 def total_cost_collider(collider):
     return sum([inner_bst(collider, stone, 0, 2000000080040)[0] for stone in stones])
 
@@ -213,81 +219,63 @@ def print_grid(t=0, axis='x', my_collider=None, highlight_stone=None, cost_for_c
 # )
 
 
-# cost: 675,252,312,003,545
-# my_collider = (
-#     (
-#         290457153320311,
-#         104499999999999,
-#         251389770507811,
-#     ), 
-#     (
-#         -9,
-#         325,
-#         88,
-#     ),
-# )
-
-
-
-# cost: 169,802,055,732,096
-# my_collider = (
-#     (
-#         291056213378905,
-#         105156249999999,
-#         252282714843749,
-#     ), 
-#     (
-#         -10,
-#         328,
-#         90,
-#     ),
-# )
-
-
-# cost: 167,424,259,206,369
-# my_collider = (
-#     (
-#         291110839843749,
-#         104218749999999,
-#         250982761383055,
-#     ), 
-#     (
-#         -10,
-#         329,
-#         92,
-#     ),
-# )
-
-# cost: 167,424,259,206,369
-# my_collider = (
-#     (
-#         291093750000000,
-#         104062500000000,
-#         251562500000000,
-#     ), 
-#     (
-#         -10,
-#         329,
-#         91,
-#     ),
-# )
-
-# cost: 53,466,768,727,427
+# cost: 12,044,122,529
 # my_collider = (
 #     (
 #         291669830322265,
-#         102968749999999,
-#         251542352437971,
+#         103597793579100,
+#         251542418325420,
 #     ), 
 #     (
 #         -11,
-#         331,
+#         330,
 #         91,
 #     ),
 # )
 
 
+# cost: 1,544,780,587
+# my_collider = (
+#     (
+#         291669802645684,
+#         103597825079025,
+#         251542422239297,
+#     ), 
+#     (
+#         -11,
+#         330,
+#         91,
+#     ),
+# )
 
+
+# cost: 318,336,578
+# my_collider = (
+#     (
+#         291669802645684,
+#         103597825079025,
+#         251542427219459,
+#     ), 
+#     (
+#         -11,
+#         330,
+#         91,
+#     ),
+# )
+
+# cost: 195,689
+my_collider = (
+    (
+        291669802653686,
+        103597826799890,
+        251542427650302,
+    ), 
+    (
+        -11,
+        330,
+        91,
+    ),
+)
 
 # c = lowest_dist_pos(*my_collider[0])[1]
 # print(c)
@@ -309,11 +297,35 @@ for stone in stones:
     all_best_ts.append((best_t, cost, stone))
 all_best_ts.sort()
 
-stringified_t_digits = []
+
+best_xs = []
+best_ys = []
+best_zs = []
+for t, _, stone in all_best_ts:
+    x, y, z = get_cost_by_dim(t, my_collider, stone)
+    best_xs.append(x)
+    best_ys.append(y)
+    best_zs.append(z)
+best_xs.sort()
+best_ys.sort()
+best_zs.sort()
+
+def stringify_digits(arr):
+    stringified_t_digits = []
+    for lol in arr:
+        stringified_t_digits.append(len(str(lol)))
+    return sorted(stringified_t_digits)
+
+just_ts = []
 for tuple_thing in all_best_ts:
-    stringified_t_digits.append(len(str(tuple_thing[0])))
-stringified_t_digits.sort()
+    just_ts.append(tuple_thing[0])
+
+stringified_t_digits = stringify_digits(just_ts)
 print(f'{stringified_t_digits}')
+
+print_blue(f'{stringify_digits(best_xs)=}')
+print_blue(f'{stringify_digits(best_ys)=}')
+print_blue(f'{stringify_digits(best_zs)=}')
 
 wanted_t_index = 0
 
@@ -443,5 +455,106 @@ while True:
 #         -9,
 #         325,
 #         88,
+#     ),
+# )
+
+# cost: 675,252,312,003,545
+# my_collider = (
+#     (
+#         290457153320311,
+#         104499999999999,
+#         251389770507811,
+#     ), 
+#     (
+#         -9,
+#         325,
+#         88,
+#     ),
+# )
+
+
+
+# cost: 169,802,055,732,096
+# my_collider = (
+#     (
+#         291056213378905,
+#         105156249999999,
+#         252282714843749,
+#     ), 
+#     (
+#         -10,
+#         328,
+#         90,
+#     ),
+# )
+
+
+# cost: 167,424,259,206,369
+# my_collider = (
+#     (
+#         291110839843749,
+#         104218749999999,
+#         250982761383055,
+#     ), 
+#     (
+#         -10,
+#         329,
+#         92,
+#     ),
+# )
+
+# cost: 167,424,259,206,369
+# my_collider = (
+#     (
+#         291093750000000,
+#         104062500000000,
+#         251562500000000,
+#     ), 
+#     (
+#         -10,
+#         329,
+#         91,
+#     ),
+# )
+        
+# cost: 53,466,768,727,427
+# my_collider = (
+#     (
+#         291669830322265,
+#         102968749999999,
+#         251542352437971,
+#     ), 
+#     (
+#         -11,
+#         331,
+#         91,
+#     ),
+# )
+
+# cost: 25,835,072,929,008
+# my_collider = (
+#     (
+#         291669830322265,
+#         103468749999999,
+#         251542352437971,
+#     ), 
+#     (
+#         -11,
+#         330,
+#         91,
+#     ),
+# )
+
+# cost: 26,980,495,287
+# my_collider = (
+#     (
+#         291669830322265,
+#         103597793579100,
+#         251542352437971,
+#     ), 
+#     (
+#         -11,
+#         330,
+#         91,
 #     ),
 # )
