@@ -66,12 +66,6 @@ for i in nums[1:]:
 print(prev)
 
 
-8
-
-12
-
-96 / 4 = 24
-
 
 
 # correct was 13,289,612,809,129

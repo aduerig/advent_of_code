@@ -35,13 +35,13 @@ Numba seems to demand to compile ALL of the function that you decorate to native
 #### 6
 I first implemented as a linear search which runs fast enough, but after I coded as a binary search for fun / practice. I read online and chatted with a friend about it and realized I didn't catch that this problem always followes a quadratic curve, which makes sense.
 
-I just solved it mathmatically by finding the critical points and subtracting for fun at the top of 6.py. I really like problems with several ways to solve.
+I just solved it mathmatically by finding the critical points and subtracting for fun at the top of 6.py. I like problems with several ways to solve.
 
-###### rating: 7/10
+###### rating: 6/10
 
 #### 7
 
-Implementation challenge problem for part 1. very subtly different poker rules. was fun to try to make a concise function to assign the rankings of a hand, though I don't really think I succeeded in making it readable...
+Implementation challenge problem for part 1. poker, but subtly different. was fun to try to make a concise function to assign the rankings of a hand, though I don't really think I succeeded in making it readable...
 ```python
 def get_type(a, b, c, d, e):
     if a != b:
@@ -59,8 +59,70 @@ def get_type(a, b, c, d, e):
     return 2
 ```
 
+###### rating: 6.5/10
 
 #### 8
+
+binary graph traversal problem. part 2 has multiple start and end points. we want to find the number on when all the starts are on some end. The way I solved it is by taking the LCM of the cycle length of all the starts to the ends.
+
+I later was told by a friend that this isn't nesseccarily true for all inputs though, for multiple reasons. If the graph is more complex and start points can hit multiple ending points, the cycles are much much more confusing. Imagine 3 start nodes which reach an end point at the following indexes:
+```
+A: (2, 7, 12, 17...) AND (4, 15, 26, 37...)
+B: (3, 16, 29, 42...)
+```
+
+which also can be written in a fancy math way...
+```
+t ≡ 2 (mod 5)   [from A]
+t ≡ 4 (mod 11)  [from A]
+t ≡ 3 (mod 13)  [from B]
+```
+
+I spent some time reading some math and I believe when you can solve this LCM whenever the remainders are 0, but not when they are non-zero. Then the Chinese Remainder Theorem (CRT) is used.
+
+##### GCD tangent
+
+CRT relies on calculating GCD's, which lead me to read about euclid's algorithm, which in itself is interesting. It's an quick iterative algorithm, and it relies on the fact that when a > b, GCD(a, b) == GCD(a % b, b). (this is basically the algorithm anyway).
+
+And then to calculate the GCD between many integers we can just run it iteratively on pairs on numbers. But honestly even the fact that GCD(a, b, c) == GCD(GCD(a, b), c) is suprising to me, though after playing around with some numbers it does become clear you can't find an easy counterexample (I don't know the proof).
+
+Both of the properties are interesting and I don't know if I should try to understand them more intrinsically, but I'll try to just memorize them for now.
+
+##### Back to CRT
+
+CRT relies on the fact that all the modulus (number after mod) is coprime with all others. You can calculate coprimeness by taking the GCD of all numbers. If it is anything other than 1, it is not coprime. You can do this with arbitrary NON-coprime inputs using prime factorization: 
+```
+x ≡ 1 (mod 16)
+x ≡ 5 (mod 40)
+
+After factoring above because they aren't coprime:
+
+x ≡ 1 (mod 2)
+x ≡ 1 (mod 8)
+x ≡ 5 (mod 40)
+
+which x ≡ 1 (mod 8) is actually contained WITHIN x ≡ 5 (mod 40), so your final input is:
+
+x ≡ 1 (mod 2)
+x ≡ 5 (mod 40)
+```
+
+[Maybe there's a more straightforward way to calculate CRT without reducing the inputs to non-coprime inputs](https://math.stackexchange.com/questions/1644677/what-to-do-if-the-modulus-is-not-coprime-in-the-chinese-remainder-theorem), but I don't have the capacity to understand that.
+
+For non-coprime inputs, there's actually MANY ways to find impossibilities. If you ever reduce to the same modulus, but different remainders, it is clear there is no solution. Now, for CRT
+
+keep following: https://www.youtube.com/watch?v=ru7mWZJlRQg
+
+
+x % 2 == 1
+y % 2 == 0
+
+x = 1 (mod 2)
+x = 0 (mod 2)
+
+Anyway, all of that is useless because the input cycles at remainder 0.
+
+###### rating: 2/10 (I don't like math)
 
 #### 9
 
@@ -96,3 +158,4 @@ def get_type(a, b, c, d, e):
 
 #### 25
 
+###### rating: 1/10 (I really don't like math)
