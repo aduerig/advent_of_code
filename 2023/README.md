@@ -1,6 +1,14 @@
-# 2023## solved 25/25
-### retrospective notes 
+# 2023, solved 25/25
 
+
+## TODO
+* Look over 12 - 25
+* understand graph problem from 25
+* understand some of the linear algebra from 24
+* understand more of the nuances of CRT and extended euclids algorithm (under problem 8)
+* understand the polynomial curve fitting from problem 9
+
+## retrospective notes 
 
 ### 1
 string matching 
@@ -159,10 +167,17 @@ The only hiccup at the end was determining which space was "inside" and which wa
 ![small](pictures/10_small.png)
 ![large](pictures/10_large.png)
 
+There's also another solution method that involved tracking parity of if we're inside or not on every row. Don't worry, we'll cover that in a later problem.
 
-###### rating: 9/10
+###### rating: 9.5/10 (nostalgia)
 
 ### 11
+
+Big galaxies. Part 1 I wrote some fun array inplace subtitution code. Part 2 I realized that the optimal path never changes based on how large an empty space is. If you have to traverse through an empty space, its the fastest path so you can just define a cost for each space and write a greedy search to go galaxy to galaxy resulting in N^2 * M^2 solution. 
+
+Adding walls may have been fun for part 2 just so you would have to write a BFS that would have to generate nodes cleverly whenever you hit an empty row or column.
+
+###### rating: 7/10
 
 ### 12
 
@@ -190,6 +205,12 @@ The only hiccup at the end was determining which space was "inside" and which wa
 
 ### 24
 
+That took awhile
+
+###### rating: 1/10? (I really don't like linear algebra math)
+
 ### 25
 
-###### rating: 1/10 (I really don't like math)
+Fun problem to think about. I ended up just writing the brute force that took like 16 hours to run. I want to read about some of the graph algorithms that could possibly solve this. They seem non trivial.
+
+###### rating: 7/10?
