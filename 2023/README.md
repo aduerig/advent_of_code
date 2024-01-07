@@ -181,7 +181,15 @@ Adding walls may have been fun for part 2 just so you would have to write a BFS 
 
 ### 12
 
+This was the second problem I spent a long time brute forcing. The final answer was made with `12_c++.cpp`. I spent a long time optimizing the code WITHOUT memoizing anything. The most interesting speedup was precomputing useful info at every spring index. I got to learn a new feature of `perf`, which is tabbing through annotated code with its associated assembly.
+
+###### rating: 8/10
+
 ### 13
+
+
+
+###### rating: 8/10
 
 ### 14
 
