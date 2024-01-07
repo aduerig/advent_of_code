@@ -2,27 +2,27 @@
 ### retrospective notes 
 
 
-#### 1
+### 1
 string matching 
 
 ###### rating: 3/10
 
-#### 2
+### 2
 string manipulation and some addition
 
 ###### rating: 4/10
 
-#### 3
+### 3
 dfs from regex digits found, some fun set stuff to make sure no double count. 
 
 ###### rating: 6/10
 
-#### 4
+### 4
 dp is def a weak spot for me. from looking at other solutions i don't think theres a non-n^2 solution. 
 
 ###### rating: 7/10
 
-#### 5
+### 5
 for part 2 this was the first problem I had fun writing a brute force to when it definately wasn't the intended solution. `5_jit_optimized.py`. i got it to run in 42 seconds using numba's JIT and iterating through all the maps. 
 
 Numba seems to demand to compile ALL of the function that you decorate to native code, which makes errors much more hard to work through because typing matters a lot. There's also definately an art to trying to intuit what the JIT will compile your code down to. Definately a case where profiling each change is important if you care about speed.
@@ -32,14 +32,14 @@ Numba seems to demand to compile ALL of the function that you decorate to native
 ###### rating: 9/10
 
 
-#### 6
+### 6
 I first implemented as a linear search which runs fast enough, but after I coded as a binary search for fun / practice. I read online and chatted with a friend about it and realized I didn't catch that this problem always followes a quadratic curve, which makes sense.
 
 I just solved it mathmatically by finding the critical points and subtracting for fun at the top of 6.py. I like problems with several ways to solve.
 
 ###### rating: 6/10
 
-#### 7
+### 7
 
 Implementation challenge problem for part 1. poker, but subtly different. was fun to try to make a concise function to assign the rankings of a hand, though I don't really think I succeeded in making it readable...
 ```python
@@ -61,7 +61,7 @@ def get_type(a, b, c, d, e):
 
 ###### rating: 6.5/10
 
-#### 8
+### 8
 
 binary graph traversal problem. part 2 has multiple start and end points. we want to find the number on when all the starts are on some end. The way I solved it is by taking the LCM of the cycle length of all the starts to the ends.
 
@@ -140,7 +140,7 @@ Anyway, all of the above is irrelevant because the problem input has cycles that
 
 ###### rating: 2/10 (I don't like math)
 
-#### 9
+### 9
 
 This problem is all about fitting some curve and predicting the next value. The problem has explicit and strange instructions on what seemed to me a very roundabout way of doing exactly that, but when I read them I thought there could be a fancier way to do it in O(n) time. After struggling a bit I thought about it more and realized the instructions given might be the most effeciect way to predict the curve. I'm tempted to believe the instructions given is actually close to an algorithm for polynomial fitting or something. (People were talking about the langrange interpolation formula online?)
 
@@ -150,7 +150,7 @@ I'm also happy I found the input reversal trick for part 2.
 
 ###### rating: 5.5/10
 
-#### 10
+### 10
 
 A bit mind bending to think about. I realized pretty quickly after part 1 that I needed to write a "0.5 index" DFS. This felt familiar to me because I realized this problem is actually just a maze creation algorithm I wrote long ago. It was my first ever personal project I had ever written. (I didn't make the algorithm). You first act as a point following the lines of the maze throughout a 2D grid, then you use the space inbetween the lines as your playing space (the solving), and the lines are your walls.
 
@@ -162,34 +162,34 @@ The only hiccup at the end was determining which space was "inside" and which wa
 
 ###### rating: 9/10
 
-#### 11
+### 11
 
-#### 12
+### 12
 
-#### 13
+### 13
 
-#### 14
+### 14
 
-#### 15
+### 15
 
-#### 16
+### 16
 
-#### 17
+### 17
 
-#### 18
+### 18
 
-#### 19
+### 19
 
-#### 20
+### 20
 
-#### 21
+### 21
 
-#### 22
+### 22
 
-#### 23
+### 23
 
-#### 24
+### 24
 
-#### 25
+### 25
 
 ###### rating: 1/10 (I really don't like math)
