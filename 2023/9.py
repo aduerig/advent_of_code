@@ -32,10 +32,4 @@ for b, seq in enumerate(seqs):
         seq.append(seq[-1] + next_seq[-1])
     
     total += stored[0][-1]
-
-
-
-    
-
-
 print(total)

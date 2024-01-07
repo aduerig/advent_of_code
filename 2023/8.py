@@ -1,7 +1,7 @@
 # https://adventofcode.com/2023
 import pathlib
 import sys
-import time
+import functools
 
 filepath = pathlib.Path(__file__)
 sys.path.append(str(filepath.parent.parent))
@@ -9,6 +9,25 @@ sys.path.append(str(filepath.parent.parent))
 
 data_file = filepath.parent.joinpath(filepath.stem + '.dat')
 
+
+def crt(remainders, mods):
+    total_prod = functools.reduce(lambda x, y: x * y, mods)
+
+    products_but = [total_prod] * len(remainders)
+    for index, mod in enumerate(mods):
+        products_but[index] = products_but[index] // mod
+    answer = 0
+    for product, mod, remainder in zip(products_but, mods, remainders):
+        mult = 1
+        while True:
+            if (mult * product) % mod == (remainder % mod):
+                answer += mult * product
+                break
+            mult += 1
+    return answer % total_prod
+remainders = [2, 2, 1]
+mods       = [3, 4, 5]
+print(crt(remainders, mods))
 
 rl_to_index = {
     'R': 1,

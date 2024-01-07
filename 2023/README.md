@@ -90,7 +90,7 @@ Both of the properties are interesting and I don't know if I should try to under
 
 ##### Back to CRT
 
-CRT relies on the fact that all the modulus (number after mod) is coprime with all others. You can calculate coprimeness by taking the GCD of all numbers. If it is anything other than 1, it is not coprime. You can do this with arbitrary NON-coprime inputs using prime factorization: 
+CRT relies on the fact that all the modulus (number after mod) is coprime with all others. You can calculate coprimeness by taking the GCD of all numbers (using the above method). If it is anything other than 1, it is not coprime. You can do this with arbitrary NON-coprime inputs using prime factorization: 
 ```
 x ≡ 1 (mod 16)
 x ≡ 5 (mod 40)
@@ -109,24 +109,58 @@ x ≡ 5 (mod 40)
 
 [Maybe there's a more straightforward way to calculate CRT without reducing the inputs to non-coprime inputs](https://math.stackexchange.com/questions/1644677/what-to-do-if-the-modulus-is-not-coprime-in-the-chinese-remainder-theorem), but I don't have the capacity to understand that.
 
-For non-coprime inputs, there's actually MANY ways to find impossibilities. If you ever reduce to the same modulus, but different remainders, it is clear there is no solution. Now, for CRT
+For non-coprime inputs, there's actually MANY ways to find impossibilities. If you ever reduce to the same modulus, but different remainders, it is clear there is no solution. Now, for actually implementing CRT I followed [this video for the concepts](https://www.youtube.com/watch?v=ru7mWZJlRQg), which I implemented to:
 
-keep following: https://www.youtube.com/watch?v=ru7mWZJlRQg
-    I think i get, except what is the extended euclidean algorithm, also what exactly the mulitplicitive modulus inverse.
+```python
+def crt(remainders, mods):
+    total_prod = functools.reduce(lambda x, y: x * y, mods)
 
-x % 2 == 1
-y % 2 == 0
+    products_but = [total_prod] * len(remainders)
+    for index, mod in enumerate(mods):
+        products_but[index] = products_but[index] // mod
+    answer = 0
+    for product, mod, remainder in zip(products_but, mods, remainders):
+        mult = 1
+        while True:
+            if (mult * product) % mod == (remainder % mod):
+                answer += mult * product
+                break
+            mult += 1
+    return answer % total_prod
+remainders = [2, 2, 1]
+mods       = [3, 4, 5]
+print(crt(remainders, mods))
+```
 
-x = 1 (mod 2)
-x = 0 (mod 2)
+Note, to find the modulo inverse (I hardly even know what that is). I implemented a linear search, but a faster method is using euclids EXTENDED algorithm.
 
-Anyway, all of that is useless because the input cycles at remainder 0.
+I think for any practical usage of CRT you will need to handle the non-coprime case since there's no real world application that would product numbers that are coprime. So any good implementation will have to do all the prime factorization or something fancier, which really gets hairy.
+
+Anyway, all of the above is irrelevant because the problem input has cycles that start at t=0.
 
 ###### rating: 2/10 (I don't like math)
 
 #### 9
 
+This problem is all about fitting some curve and predicting the next value. The problem has explicit and strange instructions on what seemed to me a very roundabout way of doing exactly that, but when I read them I thought there could be a fancier way to do it in O(n) time. After struggling a bit I thought about it more and realized the instructions given might be the most effeciect way to predict the curve. I'm tempted to believe the instructions given is actually close to an algorithm for polynomial fitting or something. (People were talking about the langrange interpolation formula online?)
+
+I don't feel like doing the deep dive right now, but there's probably some interesting mathematical concept here. Also pascals triangle is probaly related here.
+
+I'm also happy I found the input reversal trick for part 2.
+
+###### rating: 5.5/10
+
 #### 10
+
+A bit mind bending to think about. I realized pretty quickly after part 1 that I needed to write a "0.5 index" DFS. This felt familiar to me because I realized this problem is actually just a maze creation algorithm I wrote long ago. It was my first ever personal project I had ever written. (I didn't make the algorithm). You first act as a point following the lines of the maze throughout a 2D grid, then you use the space inbetween the lines as your playing space (the solving), and the lines are your walls.
+
+The only hiccup at the end was determining which space was "inside" and which was "outside", which normally isn't a problem in mazes because they are fully connected. I ended up just printing all spaces and guessing based off this visualization I made during debugging
+
+[small](pictures/10_small.png)
+[large](pictures/10_large.png)
+
+
+###### rating: 9/10
 
 #### 11
 
