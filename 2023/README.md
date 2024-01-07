@@ -2,7 +2,7 @@
 
 
 ## TODO
-* Look over 12 - 25
+* Look over 12 - 23
 * understand graph problem from 25
 * understand some of the linear algebra from 24
 * understand more of the nuances of CRT and extended euclids algorithm (under problem 8)
