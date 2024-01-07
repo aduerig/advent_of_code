@@ -112,7 +112,7 @@ x ≡ 5 (mod 40)
 For non-coprime inputs, there's actually MANY ways to find impossibilities. If you ever reduce to the same modulus, but different remainders, it is clear there is no solution. Now, for CRT
 
 keep following: https://www.youtube.com/watch?v=ru7mWZJlRQg
-
+    I think i get, except what is the extended euclidean algorithm, also what exactly the mulitplicitive modulus inverse.
 
 x % 2 == 1
 y % 2 == 0
