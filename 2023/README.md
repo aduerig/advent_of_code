@@ -156,8 +156,8 @@ A bit mind bending to think about. I realized pretty quickly after part 1 that I
 
 The only hiccup at the end was determining which space was "inside" and which was "outside", which normally isn't a problem in mazes because they are fully connected. I ended up just printing all spaces and guessing based off this visualization I made during debugging
 
-[small](pictures/10_small.png)
-[large](pictures/10_large.png)
+![small](pictures/10_small.png)
+![large](pictures/10_large.png)
 
 
 ###### rating: 9/10
