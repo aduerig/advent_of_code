@@ -5,7 +5,6 @@
 * understand pick's theorem and shoelace formula from 18
 * understand some of the linear algebra from 24
 * write a min cut randomizer for 25
-* look up what connected components are for 25
 
 ## retrospective notes 
 
