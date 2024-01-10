@@ -293,8 +293,8 @@ For part 2 I solved it with a visualizer, a custom binary search brute force, an
 
 ### 25
 
-Fun problem to think about. I ended up just writing the brute force in c++ that took like 16 hours to run. Is mincut the only class type of graph algorithm here? I think so.
+I ended up just writing the brute force in c++ that took like 16 hours to run. Mincut is the graph algorithm that everyone used to find the minimum number of cuts needed (edges) to separate two groups.
 
-Connected components algorithm is another search term.
+I tried implementing `25_mincut.py` after the fact with Kruskal's algorithm, but tracking the edges cut seems to be difficult.
 
-###### rating: 7/10
+###### rating: 5/10
