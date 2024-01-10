@@ -1,10 +1,11 @@
 # 2023, solved 25/25
 
 ## TODO
+* understand the polynomial curve fitting from problem 9
+* understand pick's theorem and shoelace formula from 18
 * understand some of the linear algebra from 24
 * write a min cut randomizer for 25
-* understand pick's theorem and shoelace formula from 18
-* understand the polynomial curve fitting from problem 9
+* look up what connected components are for 25
 
 ## retrospective notes 
 
@@ -292,6 +293,8 @@ For part 2 I solved it with a visualizer, a custom binary search brute force, an
 
 ### 25
 
-Fun problem to think about. I ended up just writing the brute force in c++ that took like 16 hours to run. Is mincut the only class type of graph algorithm here? 
+Fun problem to think about. I ended up just writing the brute force in c++ that took like 16 hours to run. Is mincut the only class type of graph algorithm here? I think so.
+
+Connected components algorithm is another search term.
 
 ###### rating: 7/10
