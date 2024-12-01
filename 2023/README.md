@@ -1,10 +1,10 @@
 # 2023, solved 25/25
 
 ## TODO
-* understand the polynomial curve fitting from problem 9
-* understand pick's theorem and shoelace formula from 18
-* understand some of the linear algebra from 24
-* write a min cut randomizer for 25
+* Understand the polynomial curve fitting from problem 9
+* Understand pick's theorem and shoelace formula from 18
+* Understand some of the linear algebra from 24
+* Write a min cut randomizer for 25
 
 ## retrospective notes 
 

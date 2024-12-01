@@ -6,7 +6,7 @@ sys.path.append(str(filepath.parent.parent))
 from helpers import *
 
 
-sub_directory = '2015' # change to None if not needed
+sub_directory = '2024' # change to None if not needed
 for i in range(1, 26):
     if sub_directory:
         the_path = pathlib.Path(__file__).parent.joinpath(sub_directory)
