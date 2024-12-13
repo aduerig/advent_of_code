@@ -34,18 +34,18 @@ def extract(guy):
     return int(a_x.split('+')[1]), int(a_y.split('+')[1])
 
 
-def extract2(guy):
+def extract2(guy, add_extra=0):
     a_x, a_y = guy.split(':')[1].split(',')
-    return int(a_x.split('=')[1]) + 10000000000000, int(a_y.split('=')[1]) + 10000000000000
+    return int(a_x.split('=')[1]) + add_extra, int(a_y.split('=')[1]) + add_extra
 
 
 to_solve = []
 for a, b, prize in things:
     a_x, a_y = extract(a)
     b_x, b_y = extract(b)
-    ans_x, ans_y = extract2(prize)
+    # ans_x, ans_y = extract2(prize, add_extra=0)
+    ans_x, ans_y = extract2(prize, add_extra=10000000000000)
     to_solve.append(((a_x, a_y), (b_x, b_y), (ans_x, ans_y)))
-
 costs = {i:1 for i in range(len(to_solve))}
 
 
@@ -60,35 +60,36 @@ while True:
         stuff = []
         total = 0
         for p, cost in costs.items():
-            if isinstance(cost):
+            if isinstance(cost, tuple):
                 stuff.append(f'S! {cost}')
             else:
                 stuff.append(cost)
         print(f'On cost: {cost}, solved: {stuff}')
         last_print_time = time.time()
 
-    if isinstance(cost, tuple):
-        continue
-    (a_x, a_y), (b_x, b_y), (ans_x, ans_y) = to_solve[index]
-    
-    a_i = 0
-    b_i = cost
-    while True:
-        if a_i * 3 > cost or b_i < 0:
-            break
+    if not isinstance(cost, tuple):
+        (a_x, a_y), (b_x, b_y), (ans_x, ans_y) = to_solve[index]
         
-        x = a_i * a_x + b_i * b_x
-        y = a_i * a_y + b_i * b_y
+        a_i = 0
+        b_i = cost
+        while True:
+            if a_i * 3 > cost or b_i < 0:
+                break
+            
+            x = a_i * a_x + b_i * b_x
+            y = a_i * a_y + b_i * b_y
+            # print(f'Trying of prize {ans_x, ans_y} at {a_i, b_i}, {a_x, a_y=}, {b_x, b_y=}')
 
-        if ans_x % x == 0 and ans_y % y == 0:
-            print(f'Win of prize {ans_x, ans_y} at {a_i, b_i}, {a_x, a_y=}, {b_x, b_y=}')
-            total += cost
-            costs[index] = (a_i, b_i)
-            break
+            if ans_x % x == 0 and ans_y % y == 0:
+                print(f'Win of prize {ans_x, ans_y} at {a_i, b_i}, {a_x, a_y=}, {b_x, b_y=}')
+                total += cost
+                costs[index] = (a_i, b_i)
+                break
+            b_i -= 3
+            a_i += 1
 
-        b_i -= 3
-        a_i += 3
-    costs[index] += 1
+    if not isinstance(costs[index], tuple):
+        costs[index] += 1
     index = (index + 1) % len(costs)
         
 
