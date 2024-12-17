@@ -1,133 +1,3 @@
-# # part 2
-# # https://adventofcode.com/2023
-# import sys
-# import pathlib
-# import copy
-
-# filepath = pathlib.Path(__file__)
-# sys.path.append(str(filepath.parent.parent))
-# from helpers import * 
-
-# filepath = pathlib.Path(__file__)
-# data_file = filepath.parent.joinpath(filepath.stem + '.dat')
-
-# initial_regs = {}
-# with open(data_file) as f:
-#     a, b, c = f.readline(), f.readline(), f.readline()
-#     f.readline()
-#     prog = f.readline()
-#     for line, label in [(a, 'a'), (b, 'b'), (c, 'c')]:
-#         line = line.strip()
-#         initial_regs[label] = int(line.split(':')[1].strip())
-#     prog = list(map(int, prog.split(':')[1].split(',')))
-
-
-# # initial_regs = [
-# #     0,
-# #     1,
-# #     2,
-# #     3,
-# #     initial_regs['a'],
-# #     initial_regs['b'],
-# #     initial_regs['c'],
-# #     7,
-# # ]
-
-# initial_regs = {
-#     4: initial_regs['a'],
-#     5: initial_regs['b'],
-#     6: initial_regs['c'],
-# }
-
-# def adv(literal, combo):
-#     regs[4] = regs[4] // pow(2, combo)
-
-# def bxl(literal, combo):
-#     regs[5] = regs[5] ^ literal
-
-# def bst(literal, combo):
-#     regs[5] = combo % 8
-
-# def jnz(literal, combo):
-#     global instruction_pointer
-#     if regs[4] != 0:
-#         instruction_pointer = literal
-#         return True
-
-# def bxc(literal, combo):
-#     regs[5] = regs[5] ^ regs[6]
-
-# def out(literal, combo):
-#     final.append(combo % 8)
-
-# def bdv(literal, combo):
-#     regs[5] = regs[4] // pow(2, combo)
-
-# def cdv(literal, combo):
-#     regs[6] = regs[4] // pow(2, combo)
-
-# ops = {
-#     0: adv,
-#     1: bxl,
-#     2: bst,
-#     3: jnz,
-#     4: bxc,
-#     5: out,
-#     6: bdv,
-#     7: cdv,
-# }
-
-# combos = [
-#     lambda: 0,
-#     lambda: 1,
-#     lambda: 2,
-#     lambda: 3,
-#     lambda: regs[4],
-#     lambda: regs[5],
-#     lambda: regs[6],
-#     lambda: 7,
-# ]
-
-# def match_so_far(a, b):
-#     for x, z in zip(a, b):
-#         if x != z:
-#             return False
-#     return True
-
-# regs = None
-# final = None
-# instruction_pointer = 0
-# def try_it(a_val):
-#     global regs, final, instruction_pointer
-#     regs = copy.deepcopy(initial_regs)
-#     regs[4] = a_val
-#     final = []
-#     instruction_pointer = 0
-#     while True:
-#         print(f'{regs}')
-#         if len(final) > len(prog) or not match_so_far(prog, final) or instruction_pointer >= len(prog) - 1:
-#             break
-#         operand = prog[instruction_pointer + 1]
-#         combo = combos[operand]()
-#         operand_func = ops[prog[instruction_pointer]]
-#         if not operand_func(operand, combo):
-#             instruction_pointer += 2
-#     return final
-
-
-# print(','.join(map(str, try_it(117440))))
-# exit()
-
-# for i in range(1000000000):
-#     if i % 1000000 == 0:
-#         print(f'{i:,}')
-#     if prog == try_it(i):
-#         print(i)
-#         exit()
-
-
-
-
 # part 2
 # https://adventofcode.com/2023
 import sys
@@ -151,6 +21,7 @@ with open(data_file) as f:
         initial_regs[label] = int(line.split(':')[1].strip())
     prog = list(map(int, prog.split(':')[1].split(',')))
 
+
 initial_regs = [
     0,
     1,
@@ -161,85 +32,73 @@ initial_regs = [
     initial_regs['c'],
     7,
 ]
-
-def adv(literal, combo):
+def adv(literal, combo, instruction_pointer):
     regs[4] = regs[4] // pow(2, combo)
+    return instruction_pointer + 2
 
-def bxl(literal, combo):
+def bxl(literal, combo, instruction_pointer):
     regs[5] = regs[5] ^ literal
+    return instruction_pointer + 2
 
-def bst(literal, combo):
+def bst(literal, combo, instruction_pointer):
     regs[5] = combo % 8
+    return instruction_pointer + 2
 
-def jnz(literal, combo):
-    global instruction_pointer
+def jnz(literal, combo, instruction_pointer):
     if regs[4] != 0:
-        instruction_pointer = literal
-        return True
+        return literal
+    return instruction_pointer + 2
 
-def bxc(literal, combo):
+def bxc(literal, combo, instruction_pointer):
     regs[5] = regs[5] ^ regs[6]
+    return instruction_pointer + 2
 
-def out(literal, combo):
+def out(literal, combo, instruction_pointer):
     final.append(combo % 8)
+    return instruction_pointer + 2
 
-def bdv(literal, combo):
+def bdv(literal, combo, instruction_pointer):
     regs[5] = regs[4] // pow(2, combo)
+    return instruction_pointer + 2
 
-def cdv(literal, combo):
+def cdv(literal, combo, instruction_pointer):
     regs[6] = regs[4] // pow(2, combo)
+    return instruction_pointer + 2
 
-ops = [
-    adv,
-    bxl,
-    bst,
-    jnz,
-    bxc,
-    out,
-    bdv,
-    cdv,
-]
-
-combos = {
-    0: lambda: 0,
-    1: lambda: 1,
-    2: lambda: 2,
-    3: lambda: 3,
-    4: lambda: regs[4],
-    5: lambda: regs[5],
-    6: lambda: regs[6],
-    7: lambda: 7,
-}
-
-def match_so_far(a, b):
-    for x, z in zip(a, b):
-        if x != z:
-            return False
-    return True
-
-regs = None
-final = None
-instruction_pointer = 0
+ops = [adv, bxl, bst, jnz, bxc, out, bdv, cdv]
+regs = copy.deepcopy(initial_regs)
 def try_it(a_val, print_out=False):
-    global regs, final, instruction_pointer
-    regs = copy.deepcopy(initial_regs)
+    global regs, final
     regs[4] = a_val
+    regs[5] = 0
+    regs[6] = 0
     final = []
     instruction_pointer = 0
     while True:
-        if len(final) > len(prog) or not match_so_far(prog, final) or instruction_pointer >= len(prog) - 1:
+        if instruction_pointer >= len(prog) - 1:
             break
         opcode, operand = prog[instruction_pointer], prog[instruction_pointer + 1]
-        combo = combos[operand]()
+
+        if operand == 7:
+            return False
+
+        combo = operand
+        if operand > 3:
+            combo = regs[operand]
         operand_func = ops[opcode]
-        ret = operand_func(operand, combo)
-        if not ret:
-            instruction_pointer += 2
-    return final
+        instruction_pointer = operand_func(operand, combo, instruction_pointer)
+        if len(final) > len(prog) or (final and final[len(final) - 1] != prog[len(final) - 1]):
+            return -1
+    return len(final) == len(prog)
 
 
 # print(','.join(map(str, try_it(117440))))
 # exit()
+
+
+# offset = 0
+# if len(sys.argv) > 1:
+#     sys.argv[1]
 
 time_start = time.time()
 for i in range(10000000000000000000):
@@ -247,7 +106,7 @@ for i in range(10000000000000000000):
     if i % 1000000 == 0:
         print(f'{i:,} iter/s: {int((i + 1) / (time.time() - time_start)):,}')
         print_out = True
-    if prog == try_it(i, print_out=print_out):
+    if try_it(i, print_out=print_out):
         print(i)
         exit()
 
