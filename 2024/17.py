@@ -67,7 +67,7 @@ def cdv(literal, combo, instruction_pointer):
 
 ops = [adv, bxl, bst, jnz, bxc, out, bdv, cdv]
 regs = copy.deepcopy(initial_regs)
-def try_it(a_val, print_out=False):
+def try_it(a_val):
     global regs, final
     regs[4] = a_val
     regs[5] = 0
@@ -77,38 +77,37 @@ def try_it(a_val, print_out=False):
     while True:
         if instruction_pointer >= len(prog) - 1:
             break
-        opcode, operand = prog[instruction_pointer], prog[instruction_pointer + 1]
-
+        operand = prog[instruction_pointer + 1]
         if operand == 7:
             return False
-
-        combo = operand
-        if operand > 3:
-            combo = regs[operand]
-        operand_func = ops[opcode]
-        instruction_pointer = operand_func(operand, combo, instruction_pointer)
-        if len(final) > len(prog) or (final and final[len(final) - 1] != prog[len(final) - 1]):
-            return -1
+        instruction_pointer = ops[prog[instruction_pointer]](operand, regs[operand], instruction_pointer)
+        if (final and final[len(final) - 1] != prog[len(final) - 1]) or len(final) > len(prog):
+            return False
     return len(final) == len(prog)
-
 
 # print(','.join(map(str, try_it(117440))))
 # exit()
-
 
 # offset = 0
 # if len(sys.argv) > 1:
 #     sys.argv[1]
 
+
+# starter = 0
+# starter = 1
+# starter = 2
+# starter = 3
+# starter = 4
+# starter = 5
+# starter = 6
+starter = 7
 time_start = time.time()
-for i in range(10000000000000000000):
-    print_out = False
-    if i % 1000000 == 0:
-        print(f'{i:,} iter/s: {int((i + 1) / (time.time() - time_start)):,}')
-        print_out = True
-    if try_it(i, print_out=print_out):
-        print(i)
-        exit()
+for i in range(starter, 10000000000000000000000000000, 8):
+    if i == starter or i % 10000000 == 0:
+        print(f'{starter=}, {i:,} iter/s: {round(((i + 1) // 8 // (time.time() - time_start))):,}')
+    if try_it(i):
+        print(f'{i=}')
+        break
 
 
 # part 1
