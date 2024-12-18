@@ -52,13 +52,6 @@ int64_t PROG_ENCODED = get<0>(PROG_ENCODED_TUPLE);
 size_t PROG_LEN = get<1>(PROG_ENCODED_TUPLE);
 vector<uint64_t> PROG_DECODED = decode(PROG_ENCODED, PROG_LEN);
 
-// # bst: b = a % 8
-// # bxl: b = b ^ 1
-// # cdv: c = a / pow(2, b)
-// # bxc: b = b ^ c
-// # out: final.append(b & 7)
-// # jnz: if a == 0: halt
-
 // # b = a % 8
 // # b = b ^ 1
 // # c = a / pow(2, b)
@@ -77,9 +70,9 @@ bool try_value(uint64_t a_val) {
         b = a & 7;
         b = b ^ 1;
         c = a ^ (1ULL << b);
-        b = b ^ (1ULL << c);
+        b = b ^ c;
         b = b ^ 4;
-        a = a ^ 8;
+        a = (uint64_t) a / 8;
         if ((b & 7) != ((PROG_ENCODED >> flen) & 7)) {
             return false;
         }
