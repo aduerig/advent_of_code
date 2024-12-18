@@ -1,11 +1,9 @@
-// g++ 17.cpp -o out && ./out
+// g++ 17.cpp -std=c++17 -Ofast -o out && ./out
 
 #include <iostream>
 #include <chrono>
 #include <vector>
 #include <array>
-#include <iterator>
-#include <algorithm>
 
 using namespace std;
 using namespace chrono;
@@ -20,12 +18,12 @@ vector<uint64_t> PROG = {2,4,1,1,7,5,4,7,1,4,0,3,5,5,3,0};
 // test 2
 // vector<uint64_t> PROG = {0,1,5,4,3,0};
 
-constexpr array<uint64_t, 32> POW2 = []() {
-    array<uint64_t, 32> t{}; 
+constexpr array<uint64_t, 64> POW2 = []() {
+    array<uint64_t, 64> t{}; 
     uint64_t v = 1;
-    for (int i = 0; i < 32; ++i) { 
+    for (int i = 0; i < 64; i++) { 
         t[i] = v; 
-        v *= 2; 
+        v *= 2;
     }
     return t;
 }();
@@ -54,49 +52,43 @@ int64_t PROG_ENCODED = get<0>(PROG_ENCODED_TUPLE);
 size_t PROG_LEN = get<1>(PROG_ENCODED_TUPLE);
 vector<uint64_t> PROG_DECODED = decode(PROG_ENCODED, PROG_LEN);
 
+// # bst: b = a % 8
+// # bxl: b = b ^ 1
+// # cdv: c = a / pow(2, b)
+// # bxc: b = b ^ c
+// # out: final.append(b & 7)
+// # jnz: if a == 0: halt
+
+// # b = a % 8
+// # b = b ^ 1
+// # c = a / pow(2, b)
+// # b = b ^ c
+// # b = b ^ 4
+// # a = a / pow(2, 3)
+// # final.append(b & 7)
+// # if a == 0: halt
+
 bool try_value(uint64_t a_val) {
-    uint64_t regs[8] = {0, 1, 2, 3, a_val, 0, 0, 7};
-    uint64_t final_encoded = 0;
+    uint64_t a = 0;
+    uint64_t b = 0;
+    uint64_t c = 0;
     uint32_t flen = 0;
-    size_t ip = 0;
-    while (ip < PROG.size()) {
-        uint8_t lit = PROG[ip + 1];
-        uint64_t combo = regs[lit];
-        switch (PROG[ip]) {
-            case 0: 
-                regs[4] /= POW2[combo];
-                ip += 2; 
-                break;
-            case 1:
-                regs[5] ^= lit;
-                ip += 2;
-                break;
-            case 2: 
-                regs[5] = combo & 7;
-                ip += 2;
-                break;
-            case 3: 
-                ip = (regs[4] != 0) ? lit : ip + 2;
-                break;
-            case 4: 
-                regs[5] ^= regs[6];
-                ip += 2;
-                break;
-            case 5: 
-                final_encoded |= (combo & 7) << flen;
-                flen += 3;
-                ip += 2;
-                break;
-            case 7: 
-                regs[6] = regs[4] / POW2[combo];
-                ip += 2; 
-                break;
-        }
-        if (PROG_ENCODED & (1ULL << flen) - 1 ^ final_encoded) {
+    for(int i = 0; i < 16; i++) {
+        b = a & 7;
+        b = b ^ 1;
+        c = a ^ (1ULL << b);
+        b = b ^ (1ULL << c);
+        b = b ^ 4;
+        a = a ^ 8;
+        if ((b & 7) != ((PROG_ENCODED >> flen) & 7)) {
             return false;
         }
+        flen += 1;
+        if (a == 0) {
+            return true;
+        }
     }
-    return final_encoded == PROG_ENCODED;
+    return false;
 }
 
 int main() {
@@ -115,7 +107,6 @@ int main() {
             cout << i << " iter/s: " << ((iters * 1000.0) / millis) << '\n';
         }
         if (try_value(i)) {
-            cout << "Found: " << i << '\n';
             break;
         }
         iters++;

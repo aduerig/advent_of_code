@@ -11,6 +11,25 @@
 # jnz: 0
 
 
+# bst: b = a % 8
+# bxl: b = b ^ 1
+# cdv: c = a / pow(2, b)
+# bxc: b = b ^ c
+# bxl: b = b ^ 4
+# adv: a = a / pow(2, 3)
+# out: final.append(b & 7)
+# jnz: if a == 0: halt
+
+# b = a % 8
+# b = b ^ 1
+# c = a / pow(2, b)
+# b = b ^ c
+# b = b ^ 4
+# a = a / pow(2, 3)
+# final.append(b & 7)
+# if a == 0: halt
+
+
 # part 2
 # https://adventofcode.com/2023
 import copy
