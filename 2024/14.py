@@ -1,3 +1,4 @@
+# part 2
 # https://adventofcode.com/2023
 import sys
 import pathlib
@@ -79,6 +80,8 @@ def print_robots(robots):
         exit()
     seen_before[t] = True
 
+
+
 print(f'Num robots: {len(robots)}')
 least_sections = float('inf')
 for i in range(100000000):
@@ -100,10 +103,12 @@ for i in range(100000000):
         dfs(visited, (x, y), detector)
         unique += bool(visited)
     
-    if unique < least_sections:
+    if (i - 67) % 101 == 0:
         print_robots(robots)
-        print(f'NEW LOWEST: iter: {i}, connected sections: {unique}')
-        least_sections = unique
+        print(i+1)
+    # if unique < least_sections:
+    #     print(f'NEW LOWEST: iter: {i}, connected sections: {unique}')
+    #     least_sections = unique
 
     # if i > 568:
     #     time.sleep(.15)
