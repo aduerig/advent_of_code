@@ -69,10 +69,10 @@ bool try_value(uint64_t a_val) {
     for(int i = 0; i < 16; i++) {
         b = a & 7;
         b = b ^ 1;
-        c = a ^ (1ULL << b);
+        c = (uint64_t) (a / (1ULL << b));
         b = b ^ c;
         b = b ^ 4;
-        a = (uint64_t) a / 8;
+        a = (uint64_t) (a / 8);
         if ((b & 7) != ((PROG_ENCODED >> flen) & 7)) {
             return false;
         }
