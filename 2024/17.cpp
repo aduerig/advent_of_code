@@ -68,58 +68,52 @@ int main() {
     uint64_t b = 0;
     uint64_t c = 0;
 
-    for (uint64_t a_val = 0; a_val < UINT64_MAX;) {
-        for (uint64_t adder = 0; adder < 2; adder++) {
-        // for (uint64_t a_val = 0; a_val < 1; a_val++) {
-            // a_val = 1089395;
-            if (a_val % 1000000000 == 0 && a_val != 0) {
-                auto millis = duration_cast<milliseconds>(steady_clock::now() - start).count();
-                cout << a_val << " iter/s: " << (a_val * 1000.0) / millis << '\n';
-            }
-
-
-            // vector<uint32_t> readable;
-            a = a_val;
-            b = 0;
-            c = 0;
-            // cout << "iter: " << a_val << ", result: ";
-            for (int i = 0; i < 16; i++) {
-                b = a & 7;
-                b = b ^ 1;
-                c = (uint64_t) (a / (1ULL << b));
-
-                // b = (a & 7) ^ 1
-                // c = a // 2
-
-                b = b ^ c;
-                b = b ^ 4;
-
-                // b = (((a & 7) ^ 1) ^ (a // 2)) ^ 4
-
-                a = (uint64_t) (a / 8);
-                // cout << (b & 7) << ',';
-                if ((b & 7) != PROG[i]) {
-                    break;
-                }
-                // readable.push_back(b & 7);
-                if (a == 0) {
-                    if (i == 15) {
-                        cout << a_val << endl;
-                        exit(0);
-                    }
-                    break;
-                }
-            }
-            // cout << endl;
-            // if (readable.size() > 8) {
-            //     cout << a_val << ": ";
-            //     for (uint64_t i: readable)
-            //         cout << i << ' ';
-            //     cout << '\n';
-            // }
-
-            a_val += to_add[adder];
+    for (uint64_t a_val = 5; a_val < UINT64_MAX; a_val += 8) {
+        // cout << a_val << endl;
+    // for (uint64_t a_val = 0; a_val < 1; a_val++) {
+        // a_val = 1089395;
+        if (a_val % 1000000001 == 0 && a_val != 0) {
+            auto millis = duration_cast<milliseconds>(steady_clock::now() - start).count();
+            cout << a_val << " iter/s: " << (a_val * 1000.0) / millis << '\n';
         }
+
+        // vector<uint32_t> readable;
+        a = a_val;
+        b = 0;
+        c = 0;
+        // cout << "iter: " << a_val << ", result: ";
+        for (int i = 0; i < 16; i++) {
+            b = a & 7;
+            b = b ^ 1;
+            c = (uint64_t) (a / (1ULL << b));
+
+            // b = (a & 7) ^ 1
+            // c = ((a & 7) ^ 1) // 2
+
+            b = b ^ c;
+            b = b ^ 4;
+
+            // b = (((a & 7) ^ 1) ^ (((a & 7) ^ 1) // 2)) ^ 4
+
+            a = (uint64_t) (a / 8);
+            // cout << (b & 7) << ',';
+            // readable.push_back(b & 7);
+            if ((b & 7) != PROG[i]) {
+                break;
+            }
+            if (a == 0) {
+                if (i == 15) {
+                    cout << a_val << endl;
+                    exit(0);
+                }
+                break;
+            }
+        }
+        // cout << endl;
+        // cout << a_val << ": ";
+        // for (uint64_t i: readable)
+        //     cout << i << ' ';
+        // cout << '\n';
     }
 }
 
