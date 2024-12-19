@@ -4,6 +4,8 @@
 #include <chrono>
 #include <vector>
 #include <array>
+#include <iomanip>
+#include <locale>
 
 using namespace std;
 using namespace chrono;
@@ -20,24 +22,6 @@ vector<uint64_t> PROG = {
     5,5,
     3,0
 };
-
-
-
-// test 1
-// vector<uint64_t> PROG = {0, 3, 5, 4, 3, 0};
-
-// test 2
-// vector<uint64_t> PROG = {0,1,5,4,3,0};
-
-constexpr array<uint64_t, 64> POW2 = []() {
-    array<uint64_t, 64> t{}; 
-    uint64_t v = 1;
-    for (int i = 0; i < 64; i++) { 
-        t[i] = v; 
-        v *= 2;
-    }
-    return t;
-}();
 
 tuple<int64_t, size_t> encode(vector<uint64_t> arr) {
     uint64_t e = 0;
@@ -78,7 +62,6 @@ int main() {
     std::cout << '\n';
 
     auto start = steady_clock::now();
-    uint64_t iters = 0;
     uint64_t a = 0;
     uint64_t b = 0;
     uint64_t c = 0;
@@ -87,9 +70,10 @@ int main() {
     // for (uint64_t a_val = 0; a_val < 1; a_val++) {
         // a_val = 83503;
         // a_val = 416618;
-        if (a_val % 100000000 == 0 && a_val != 0) {
+        if (a_val % 1000000000 == 0 && a_val != 0) {
             auto millis = duration_cast<milliseconds>(steady_clock::now() - start).count();
-            cout << a_val << " iter/s: " << ((iters * 1000.0) / millis) << '\n';
+            // cout << format_commas(a_val) << " iter/s: " << format_commas((a_val * 1000.0) / millis) << '\n';
+            cout << a_val << " iter/s: " << (a_val * 1000.0) / millis << '\n';
         }
 
         // # b = a % 8
@@ -123,6 +107,5 @@ int main() {
                 break;
             }
         }
-        iters++;
     }
 }
