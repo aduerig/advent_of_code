@@ -10,7 +10,18 @@ using namespace chrono;
 
 
 // real
-vector<uint64_t> PROG = {2,4,1,1,7,5,4,7,1,4,0,3,5,5,3,0};
+vector<uint64_t> PROG = {
+    2,4,
+    1,1,
+    7,5,
+    4,7,
+    1,4,
+    0,3,
+    5,5,
+    3,0
+};
+
+
 
 // test 1
 // vector<uint64_t> PROG = {0, 3, 5, 4, 3, 0};
@@ -52,39 +63,13 @@ int64_t PROG_ENCODED = get<0>(PROG_ENCODED_TUPLE);
 size_t PROG_LEN = get<1>(PROG_ENCODED_TUPLE);
 vector<uint64_t> PROG_DECODED = decode(PROG_ENCODED, PROG_LEN);
 
-// # b = a % 8
-// # b = b ^ 1
-// # c = a / pow(2, b)
-// # b = b ^ c
-// # b = b ^ 4
-// # a = a / pow(2, 3)
-// # final.append(b & 7)
-// # if a == 0: halt
-
-bool try_value(uint64_t a_val) {
-    uint64_t a = 0;
-    uint64_t b = 0;
-    uint64_t c = 0;
-    uint32_t flen = 0;
-    for(int i = 0; i < 16; i++) {
-        b = a & 7;
-        b = b ^ 1;
-        c = (uint64_t) (a / (1ULL << b));
-        b = b ^ c;
-        b = b ^ 4;
-        a = (uint64_t) (a / 8);
-        if ((b & 7) != ((PROG_ENCODED >> flen) & 7)) {
-            return false;
-        }
-        flen += 1;
-        if (a == 0) {
-            return true;
-        }
-    }
-    return false;
-}
 
 int main() {
+    vector<uint16_t> PROG_LOOKUP;
+    for (size_t i = 0; i < 16; i++) {
+        PROG_LOOKUP.push_back((PROG_ENCODED >> i*3) & 7);
+    }
+
     for (uint64_t i: PROG)
         std::cout << i << ' ';
     std::cout << '\n';
@@ -94,13 +79,49 @@ int main() {
 
     auto start = steady_clock::now();
     uint64_t iters = 0;
-    for (uint64_t i = 0; i < UINT64_MAX; i++) {
-        if (i % 100000000 == 0 && i != 0) {
+    uint64_t a = 0;
+    uint64_t b = 0;
+    uint64_t c = 0;
+
+    for (uint64_t a_val = 0; a_val < UINT64_MAX; a_val++) {
+    // for (uint64_t a_val = 0; a_val < 1; a_val++) {
+        // a_val = 83503;
+        // a_val = 416618;
+        if (a_val % 100000000 == 0 && a_val != 0) {
             auto millis = duration_cast<milliseconds>(steady_clock::now() - start).count();
-            cout << i << " iter/s: " << ((iters * 1000.0) / millis) << '\n';
+            cout << a_val << " iter/s: " << ((iters * 1000.0) / millis) << '\n';
         }
-        if (try_value(i)) {
-            break;
+
+        // # b = a % 8
+        // # b = b ^ 1
+        // # c = a / pow(2, b)
+        // # b = b ^ c
+        // # b = b ^ 4
+        // # a = a / pow(2, 3)
+        // # final.append(b & 7)
+        // # if a == 0: halt
+        a = a_val;
+        b = 0;
+        c = 0;
+        // cout << "iter: " << a_val << ", result: ";
+        for (int i = 0; i < 16; i++) {
+            b = a & 7;
+            b = b ^ 1;
+            c = (uint64_t) (a / (1ULL << b));
+            b = b ^ c;
+            b = b ^ 4;
+            a = (uint64_t) (a / 8);
+            // cout << (b & 7) << ',';
+            if ((b & 7) != PROG[i]) {
+                break;
+            }
+            if (a == 0) {
+                if (i == 15) {
+                    cout << a_val << endl;
+                    exit(0);
+                }
+                break;
+            }
         }
         iters++;
     }

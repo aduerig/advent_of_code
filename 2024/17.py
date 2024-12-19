@@ -99,6 +99,7 @@ def try_it(a_val):
     final_encoded = 0
     final_len = 0
     instruction_pointer = 0
+    finals_readable = []
     while instruction_pointer < prog_len - 1:
         # print(regs)
         literal = prog[instruction_pointer + 1]
@@ -123,16 +124,21 @@ def try_it(a_val):
             regs[5] = regs[5] ^ regs[6]
             instruction_pointer += 2
         if opcode == 5:
-            final_encoded |= (combo % 8) << final_len
+            final_encoded |= (combo & 7) << final_len
             final_len += 3
+            finals_readable.append(combo & 7)
             instruction_pointer += 2
         if opcode == 7:
             regs[6] = regs[4] // POW2_TABLE[combo]
             instruction_pointer += 2
         if (prog_encoded & ((1 << final_len) - 1)) ^ final_encoded:
+            print(finals_readable)
             return False
+    print(finals_readable)
     return final_encoded == prog_encoded
 
+try_it(416618)
+exit()
 
 starter = 0
 num_workers = 1
