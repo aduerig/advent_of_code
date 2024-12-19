@@ -48,7 +48,7 @@ int64_t PROG_ENCODED = get<0>(PROG_ENCODED_TUPLE);
 size_t PROG_LEN = get<1>(PROG_ENCODED_TUPLE);
 vector<uint64_t> PROG_DECODED = decode(PROG_ENCODED, PROG_LEN);
 
-array<uint64_t, 2> to_add = {5, 11};
+// array<uint64_t, 4> to_add = {8, 8, 8, 240};
 
 int main() {
     vector<uint16_t> PROG_LOOKUP;
@@ -68,36 +68,34 @@ int main() {
     uint64_t b = 0;
     uint64_t c = 0;
 
-    for (uint64_t a_val = 5; a_val < UINT64_MAX; a_val += 8) {
-        // cout << a_val << endl;
-    // for (uint64_t a_val = 0; a_val < 1; a_val++) {
-        // a_val = 1089395;
+    for (uint64_t a_val = 0; a_val < 10000; a_val++) {
+    // for (uint64_t a_val = 69; a_val < UINT64_MAX;) {
+            
+
         if (a_val % 1000000001 == 0 && a_val != 0) {
             auto millis = duration_cast<milliseconds>(steady_clock::now() - start).count();
             cout << a_val << " iter/s: " << (a_val * 1000.0) / millis << '\n';
         }
 
-        // vector<uint32_t> readable;
+        vector<uint32_t> readable;
         a = a_val;
         b = 0;
         c = 0;
-        // cout << "iter: " << a_val << ", result: ";
         for (int i = 0; i < 16; i++) {
             b = a & 7;
             b = b ^ 1;
             c = (uint64_t) (a / (1ULL << b));
 
             // b = (a & 7) ^ 1
-            // c = ((a & 7) ^ 1) // 2
+            // c = a // (1 << (a & 7) ^ 1)
 
             b = b ^ c;
             b = b ^ 4;
 
-            // b = (((a & 7) ^ 1) ^ (((a & 7) ^ 1) // 2)) ^ 4
+            // b = (((a & 7) ^ 1) ^ (a // (1 << (a & 7) ^ 1)) ^ 4
 
             a = (uint64_t) (a / 8);
-            // cout << (b & 7) << ',';
-            // readable.push_back(b & 7);
+            readable.push_back(b & 7);
             if ((b & 7) != PROG[i]) {
                 break;
             }
@@ -109,11 +107,13 @@ int main() {
                 break;
             }
         }
-        // cout << endl;
-        // cout << a_val << ": ";
-        // for (uint64_t i: readable)
-        //     cout << i << ' ';
-        // cout << '\n';
+
+        if (readable[0] == 2 && readable[1] == 4) {
+            cout << a_val << ": ";
+            for (uint64_t i: readable)
+                cout << i << ' ';
+            cout << '\n';
+        }
     }
 }
 
