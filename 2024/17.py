@@ -137,7 +137,7 @@ def try_it(a_val):
     print(finals_readable)
     return final_encoded == prog_encoded
 
-try_it(416618)
+try_it(1089395)
 exit()
 
 starter = 0
