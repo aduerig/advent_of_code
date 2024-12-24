@@ -64,7 +64,7 @@ int main() {
     std::cout << '\n';
 
     auto start = steady_clock::now();
-    uint64_t a = 5;
+    uint64_t a = 0;
     uint64_t b = 0;
     uint64_t c = 0;
 

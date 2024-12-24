@@ -1,6 +1,9 @@
+# part 2, assuming only 1 answer
 # https://adventofcode.com/2023
 import sys
 import pathlib
+import math
+
 
 filepath = pathlib.Path(__file__)
 sys.path.append(str(filepath.parent.parent))
@@ -35,73 +38,121 @@ def extract(guy):
 
 
 def extract2(guy, add_extra=0):
-    a_x, a_y = guy.split(':')[1].split(',')
-    return int(a_x.split('=')[1]) + add_extra, int(a_y.split('=')[1]) + add_extra
+    ans_x, ans_y = guy.split(':')[1].split(',')
+    return int(ans_x.split('=')[1]) + add_extra, int(ans_y.split('=')[1]) + add_extra
 
 
-last_a_presses_inv = None
-last_b_presses_inv = None
-last_a_presses_def = None
-last_a_presses_def = None
-total = 0
-for a, b, prize in things[1:]:
+tokens = 0
+for index, (a, b, prize) in enumerate(things):
     a_x, a_y = extract(a)
     b_x, b_y = extract(b)
     # ans_x, ans_y = extract2(prize, add_extra=0)
     ans_x, ans_y = extract2(prize, add_extra=10000000000000)
 
+    if a_x % b_x == 0 or b_x % a_x == 0:
+        print(f'{index}: Have: a - {a_x, a_y}, b - {b_x, b_y}, Need answer: {ans_x, ans_y}')
+    continue
+    print(f'{index}: Have: a - {a_x, a_y}, b - {b_x, b_y}, Need answer: {ans_x, ans_y}')
 
     def works(a_presses, b_presses, a, b, ans):
         return a_presses * a + b_presses * b == ans
-
-    num = 0
-    while True:
-        for i in range(2):
-            first, second, invert = [[a_x, b_x, False], [b_x, a_x, True]][i]
-            
+    # if index== 1:
+    #     exit()
+    def calc(first, second, ans, n=10):
+        num = 0
+        valids = []
+        while len(valids) < n and num < 10000000:
             have = num * first
-            needed = ans_x - have
+            needed = ans - have
             if needed % second == 0:
                 a_presses = num
                 b_presses = needed // second
-                # print(f'X DETECTOR {ans_x, ans_y} at {a_presses, b_presses=} {a_x, a_y=}, {b_x, b_y=}, {have=}, {needed=}')
+                valids.append((a_presses, b_presses, first, second, ans))
+            num += 1
+        return valids
+    
+    valid_x_1 = calc(a_x, b_x, ans_x)
+    valid_y_1 = calc(a_y, b_y, ans_y)
 
-                if invert:
-                    a_presses, b_presses = b_presses, a_presses
+    if len(valid_x_1) < 3 or len(valid_y_1) < 3:
+        continue
 
-                # if invert:
-                #     # if last_a_presses_inv is not None:
-                #     #     print(f'Diff: {a_presses - last_a_presses_inv}, new: {a_presses}')
+    def find_diffy(valids):
+        a_diff = valids[1][0] - valids[0][0]
+        b_diff = valids[1][1] - valids[0][1]
 
-                #     last_a_presses_inv = a_presses
-                #     last_b_presses_inv = b_presses
-                # else:
-                #     # if last_a_presses_def is not None:
-                #     #     print(f'Diff: {a_presses - last_a_presses_def}, new: {a_presses}')
+        a_start = valids[0][0]
+        b_start = valids[0][1]
 
-                #     last_a_presses_def = a_presses
-                #     last_b_presses_def = b_presses
+        a_iter = a_start
+        b_iter = b_start
+        index = 0
+        # print(f'{a_start=}, {b_start=}, {a_diff=}, {b_diff=}')
+        while index < len(valids):
+            a_presses, b_presses, first, second, ans = valids[index]
+            if a_iter != a_presses:
+                print(f'{index}: No matchy for a: {a_iter} != {a_presses}')
+                exit()
+            if b_iter != b_presses:
+                print(f'{index}: No matchy for b: {b_iter} != {b_presses}')
+                exit()
+            a_iter += a_diff
+            b_iter += b_diff
+            index += 1
+        return a_start, a_diff, b_start, b_diff
 
-                if works(a_presses, b_presses, a_y, b_y, ans_y):
-                    print(f'WOW: {a_presses, b_presses=}')
-                # if not works(a_presses, b_presses, a_x, b_x, ans_x):
-                #     print(f'FAILED')
-                #     exit()
-        num += 1
+    diffy_x_1 = find_diffy(valid_x_1)
+    diffy_y_1 = find_diffy(valid_y_1)
+    
+    print(diffy_x_1)
+    print(diffy_y_1)
+
+    def find_first(diffy_x_1, diffy_y_1):
+        for i in range(max(diffy_x_1[0], diffy_y_1[0]), 100000000):
+            if i % diffy_x_1[1] == diffy_x_1[0] and i % diffy_y_1[1] == diffy_y_1[0]:
+                return i
+    
+
+    a_curr_presses = find_first(diffy_x_1[:2], diffy_y_1[:2])
+    if a_curr_presses is None:
+        continue
+
+    a_to_add = math.lcm(diffy_x_1[1], diffy_y_1[1])
+
+    def solve(a_curr_presses):
+        print(f'{a_curr_presses=}, {a_to_add=}')
+        for i in range(1000000000000000):
+            curr_x = a_curr_presses * a_x
+            curr_y = a_curr_presses * a_y
+
+            needed_x = ans_x - curr_x
+            needed_y = ans_y - curr_y
+
+            needed_b_presses_x = needed_x / b_x
+            # needed_b_presses_y = needed_y / b_y
 
 
-    # for cost, a_i, b_i in pairs:
-    #     x = a_i * a_x + b_i * b_x
-    #     y = a_i * a_y + b_i * b_y
+            if needed_x // b_x == needed_y // b_y:
+                # print(f'Answer: {a_curr_presses=}, {needed_b_presses_x=}, {needed_b_presses_y=}')
+                return a_curr_presses, int(needed_b_presses_x)
+            
+            if needed_b_presses_x < 0:
+                return None, None
 
-    #     if (ans_x, ans_y) == (x, y):
-    #         print(f'Win of prize {ans_x, ans_y} at {a_i, b_i}, {a_x, a_y=}, {b_x, b_y=}')
-    #         total += cost
-    #         break
+            # loss = abs(needed_x) + abs(needed_y)
+            # if i % 100000000 == 0:
+            #     print(f'{a_curr_presses:,}: {loss}, {needed_b_presses_x:.2f}, {needed_b_presses_y:.2f}')
+
+            a_curr_presses += a_to_add
+    
+    a_press, b_press = solve(a_curr_presses)
+    print(f'     Answer: {a_press=}, {b_press=}')
+    if a_press is not None:
+        tokens += a_press * 3 + b_press
+print('TOTAL TOKENS:', tokens)
 
 
-
-
+# TOTAL TOKENS: 74914228471331
 
 # part 2 old strat
 # # https://adventofcode.com/2023
