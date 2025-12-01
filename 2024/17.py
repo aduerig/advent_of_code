@@ -1,3 +1,47 @@
+# part 2
+initial_regs = {
+    'a': 211325,
+    'b': 0,
+    'c': 0,
+}
+prog = [2, 4, 1, 1, 7, 5, 4, 7, 1, 4, 0, 3, 5, 5, 3, 0]
+
+def get_n(a_init, needed_guys):
+    a = a_init
+    b = initial_regs['b']
+    readable = []
+    while len(readable) < needed_guys:
+        b = (a & 7) ^ 1
+        b = b ^ (a // (1 << b))
+        b = b ^ 4
+        a = a // 8
+        readable.append(b & 7)
+    return readable
+
+validers = []
+needed = [1, 4, 0, 3, 5, 5, 3, 0]
+for a in range(2**24):
+    res = get_n(a, 8)
+    if res == needed:
+        print(f'Valid: {a:03b}')
+        validers.append(a)
+
+valid_2 = []
+needed_2 = [2, 4, 1, 1, 7, 5, 4, 7]
+for a in range(2**24):
+    for p in validers:
+        res = get_n(a + (p << 24), 8)
+        if res == needed_2:
+            print(f'Valid 2: {a + (p << 24):03b}')
+            valid_2.append(a + (p << 24))
+
+valid_2.sort()
+print(valid_2[0])
+
+
+
+
+# random writings
 # Each instruction also reads the 3-bit number after it as an input; this is called its operand.
 
 # the program (instruction: operand)
@@ -32,16 +76,16 @@
 
 # part 2
 # https://adventofcode.com/2023
-import copy
-import time
+# import copy
+# import time
 
-# real
-initial_regs = {
-    'a': 30553366,
-    'b': 0,
-    'c': 0,
-}
-prog = [2,4,1,1,7,5,4,7,1,4,0,3,5,5,3,0]
+# # real
+# initial_regs = {
+#     'a': 30553366,
+#     'b': 0,
+#     'c': 0,
+# }
+# prog = [2,4,1,1,7,5,4,7,1,4,0,3,5,5,3,0]
 
 # test
 # initial_regs = {
@@ -61,98 +105,131 @@ prog = [2,4,1,1,7,5,4,7,1,4,0,3,5,5,3,0]
 
 
 
-def encode(the_list):
-    encoded = 0
-    for index, num in enumerate(the_list):
-        encoded |= num << (index * 3)
-    return encoded, index + 1
+# def encode(the_list):
+#     encoded = 0
+#     for index, num in enumerate(the_list):
+#         encoded |= num << (index * 3)
+#     return encoded, index + 1
 
-def decode(encoded, the_len):
-    decoded = []
-    for i in range(the_len):
-        mask = (1 << ((i+1) * 3)) - 1
-        extract = mask & encoded
-        rel = extract >> (i * 3)
-        decoded.append(rel)
-    return decoded
+# def decode(encoded, the_len):
+#     decoded = []
+#     for i in range(the_len):
+#         mask = (1 << ((i+1) * 3)) - 1
+#         extract = mask & encoded
+#         rel = extract >> (i * 3)
+#         decoded.append(rel)
+#     return decoded
 
-prog_encoded, prog_len = encode(prog)
-prog_decoded = decode(prog_encoded, prog_len)
+# prog_encoded, prog_len = encode(prog)
+# prog_decoded = decode(prog_encoded, prog_len)
 
-initial_regs = [
-    0,
-    1,
-    2,
-    3,
-    initial_regs['a'],
-    initial_regs['b'],
-    initial_regs['c'],
-    7,
-]
+# initial_regs = [
+#     0,
+#     1,
+#     2,
+#     3,
+#     initial_regs['a'],
+#     initial_regs['b'],
+#     initial_regs['c'],
+#     7,
+# ]
 
-POW2_TABLE = [2**i for i in range(32)]
-regs = copy.deepcopy(initial_regs)
-def try_it(a_val):
-    regs[4] = a_val
-    regs[5] = 0
-    regs[6] = 0
-    final_encoded = 0
-    final_len = 0
-    instruction_pointer = 0
-    finals_readable = []
-    while instruction_pointer < prog_len - 1:
-        # print(regs)
-        literal = prog[instruction_pointer + 1]
-        combo = regs[literal]
-        opcode = prog[instruction_pointer]
+# POW2_TABLE = [2**i for i in range(32)]
+# regs = copy.deepcopy(initial_regs)
+# def try_it(a_val):
+#     regs[4] = a_val
+#     regs[5] = 0
+#     regs[6] = 0
+#     final_encoded = 0
+#     final_len = 0
+#     instruction_pointer = 0
+#     finals_readable = []
+#     while instruction_pointer < prog_len - 1:
+#         # print(regs)
+#         literal = prog[instruction_pointer + 1]
+#         combo = regs[literal]
+#         opcode = prog[instruction_pointer]
 
-        if opcode == 0:
-            regs[4] = regs[4] // POW2_TABLE[combo]
-            instruction_pointer += 2
-        if opcode == 1:
-            regs[5] = regs[5] ^ literal
-            instruction_pointer += 2
-        if opcode == 2:
-            regs[5] = combo & 7
-            instruction_pointer += 2
-        if opcode == 3:
-            if regs[4] != 0:
-                instruction_pointer = literal
-            else:
-                instruction_pointer += 2
-        if opcode == 4:
-            regs[5] = regs[5] ^ regs[6]
-            instruction_pointer += 2
-        if opcode == 5:
-            final_encoded |= (combo & 7) << final_len
-            final_len += 3
-            finals_readable.append(combo & 7)
-            instruction_pointer += 2
-        if opcode == 7:
-            regs[6] = regs[4] // POW2_TABLE[combo]
-            instruction_pointer += 2
-        if (prog_encoded & ((1 << final_len) - 1)) ^ final_encoded:
-            print(finals_readable)
-            return False
-    print(finals_readable)
-    return final_encoded == prog_encoded
+#         if opcode == 0:
+#             regs[4] = regs[4] // POW2_TABLE[combo]
+#             instruction_pointer += 2
+#         if opcode == 1:
+#             regs[5] = regs[5] ^ literal
+#             instruction_pointer += 2
+#         if opcode == 2:
+#             regs[5] = combo & 7
+#             instruction_pointer += 2
+#         if opcode == 3:
+#             if regs[4] != 0:
+#                 instruction_pointer = literal
+#             else:
+#                 instruction_pointer += 2
+#         if opcode == 4:
+#             regs[5] = regs[5] ^ regs[6]
+#             instruction_pointer += 2
+#         if opcode == 5:
+#             final_encoded |= (combo & 7) << final_len
+#             final_len += 3
+#             finals_readable.append(combo & 7)
+#             instruction_pointer += 2
+#         if opcode == 7:
+#             regs[6] = regs[4] // POW2_TABLE[combo]
+#             instruction_pointer += 2
+#         if (prog_encoded & ((1 << final_len) - 1)) ^ final_encoded:
+#             print(finals_readable)
+#             return False
+#     print(finals_readable)
+#     return final_encoded == prog_encoded
 
-try_it(1089395)
-exit()
+# try_it(1089395)
+# exit()
 
-starter = 0
-num_workers = 1
-time_start = time.time()
-for i in range(starter, 10000000000000000000, num_workers):
-    if i == starter or i % 10000000 == 0:
-        print(f'{starter=}, {i:,} iter/s: {round(((i + 1) // num_workers // (time.time() - time_start))):,}')
-    if try_it(i):
-        print(f'{i=}')
-        break
+# starter = 0
+# num_workers = 1
+# time_start = time.time()
+# for i in range(starter, 10000000000000000000, num_workers):
+#     if i == starter or i % 10000000 == 0:
+#         print(f'{starter=}, {i:,} iter/s: {round(((i + 1) // num_workers // (time.time() - time_start))):,}')
+#     if try_it(i):
+#         print(f'{i=}')
+#         break
 
 
 
-# # part 2 (bruteforce, too slow)
+
+
+
+
+# b = a & 7;
+# b = b ^ 1;
+# c = (int) (a / pow(2, b));
+# b = b ^ c;
+# b = b ^ 4;
+# a = (int) (a / 8);
+# readable.push_back(b & 7);
+
+
+# test
+# initial_regs = {
+#     'a': 2024,
+#     'b': 0,
+#     'c': 0,
+# }
+# prog = [0,3,5,4,3,0]
+
+
+
+# test 2
+# initial_regs = {
+#     'a': 729,
+#     'b': 0,
+#     'c': 0,
+# }
+# prog = [0,1,5,4,3,0]
+
+
+
+# # part 2 (anotehr attept, too slow)
 # # https://adventofcode.com/2023
 # import sys
 # import pathlib
@@ -176,92 +253,104 @@ for i in range(starter, 10000000000000000000, num_workers):
 #     prog = list(map(int, prog.split(':')[1].split(',')))
 
 
-# initial_regs = [
-#     0,
-#     1,
-#     2,
-#     3,
-#     initial_regs['a'],
-#     initial_regs['b'],
-#     initial_regs['c'],
-#     7,
-# ]
-# def adv(literal, combo, instruction_pointer):
-#     regs[4] = regs[4] // pow(2, combo)
-#     return instruction_pointer + 2
+# regs = None
+# def checker(thing):
+#     global initial_regs, regs
+#     initial_regs = [
+#         0,
+#         1,
+#         2,
+#         3,
+#         initial_regs['a'],
+#         initial_regs['b'],
+#         initial_regs['c'],
+#         7,
+#     ]
+#     def adv(literal, combo, instruction_pointer):
+#         regs[4] = regs[4] // pow(2, combo)
+#         return instruction_pointer + 2
 
-# def bxl(literal, combo, instruction_pointer):
-#     regs[5] = regs[5] ^ literal
-#     return instruction_pointer + 2
+#     def bxl(literal, combo, instruction_pointer):
+#         regs[5] = regs[5] ^ literal
+#         return instruction_pointer + 2
 
-# def bst(literal, combo, instruction_pointer):
-#     regs[5] = combo % 8
-#     return instruction_pointer + 2
+#     def bst(literal, combo, instruction_pointer):
+#         regs[5] = combo % 8
+#         return instruction_pointer + 2
 
-# def jnz(literal, combo, instruction_pointer):
-#     if regs[4] != 0:
-#         return literal
-#     return instruction_pointer + 2
+#     def jnz(literal, combo, instruction_pointer):
+#         if regs[4] != 0:
+#             return literal
+#         return instruction_pointer + 2
 
-# def bxc(literal, combo, instruction_pointer):
-#     regs[5] = regs[5] ^ regs[6]
-#     return instruction_pointer + 2
+#     def bxc(literal, combo, instruction_pointer):
+#         regs[5] = regs[5] ^ regs[6]
+#         return instruction_pointer + 2
 
-# def out(literal, combo, instruction_pointer):
-#     final.append(combo % 8)
-#     return instruction_pointer + 2
+#     def out(literal, combo, instruction_pointer):
+#         final.append(combo % 8)
+#         return instruction_pointer + 2
 
-# def bdv(literal, combo, instruction_pointer):
-#     regs[5] = regs[4] // pow(2, combo)
-#     return instruction_pointer + 2
+#     def bdv(literal, combo, instruction_pointer):
+#         regs[5] = regs[4] // pow(2, combo)
+#         return instruction_pointer + 2
 
-# def cdv(literal, combo, instruction_pointer):
-#     regs[6] = regs[4] // pow(2, combo)
-#     return instruction_pointer + 2
+#     def cdv(literal, combo, instruction_pointer):
+#         regs[6] = regs[4] // pow(2, combo)
+#         return instruction_pointer + 2
 
 
-# cache = {}
-# ops = [adv, bxl, bst, jnz, bxc, out, bdv, cdv]
-# regs = copy.deepcopy(initial_regs)
-# def try_it(a_val):
-#     global regs, final, pointers
-#     regs[4] = a_val
-#     regs[5] = 0
-#     regs[6] = 0
-#     final = []
-#     instruction_pointer = 0
-#     pointers = []
-#     while True:
-#         # key = (instruction_pointer, regs[4], regs[5], regs[6])
-#         # if key in cache:
-#         #     return False
-#         # cache[key] = False
-#         pointers.append(instruction_pointer)
-#         if instruction_pointer >= len(prog) - 1:
-#             print(final)
-#             break
-#         operand = prog[instruction_pointer + 1]
-#         instruction_pointer = ops[prog[instruction_pointer]](operand, regs[operand], instruction_pointer)
-#         if (final and final[len(final) - 1] != prog[len(final) - 1]) or len(final) > len(prog):
-#             # print(final)
-#             return False
-#     # print(final)
-#     return len(final) == len(prog)
+#     ops = [adv, bxl, bst, jnz, bxc, out, bdv, cdv]
+#     regs = copy.deepcopy(initial_regs)
+#     def try_it(a_val):
+#         global regs, final, pointers
+#         regs[4] = a_val
+#         regs[5] = 0
+#         regs[6] = 0
+#         final = []
+#         instruction_pointer = 0
+#         pointers = []
+#         for i in range(1000):
+#             # key = (instruction_pointer, regs[4], regs[5], regs[6])
+#             # if key in cache:
+#             #     return False
+#             # cache[key] = False
+#             pointers.append(instruction_pointer)
+#             if instruction_pointer >= len(prog) - 1:
+#                 print(final)
+#                 break
+#             operand = prog[instruction_pointer + 1]
+#             instruction_pointer = ops[prog[instruction_pointer]](operand, regs[operand], instruction_pointer)
+#             # if (final and final[len(final) - 1] != prog[len(final) - 1]) or len(final) > len(prog):
+#             #     # print(final)
+#             #     return False
+#         # print(final)
+#         return len(final) == len(prog)
 
-# # print(','.join(map(str, try_it(117440))))
-# # exit()
+#     try_it(thing)
+#     global final
+#     return final
 
-# starter = 0
-# num_workers = 1
-# time_start = time.time()
-# for i in range(starter, 10000000000000000000000000000, num_workers):
-#     if i == starter or i % 10000000 == 0:
-#         print(f'{starter=}, {i:,} iter/s: {round(((i + 1) // num_workers // (time.time() - time_start))):,}')
-#     if try_it(i):
-#         print(f'{i=}')
-#         break
-#     global pointers
-#     print(pointers)
+    # starter = 0
+    # num_workers = 1
+    # time_start = time.time()
+    # for i in range(starter, 10000000000000000000000000000, num_workers):
+    #     if i == starter or i % 10000000 == 0:
+    #         print(f'{starter=}, {i:,} iter/s: {round(((i + 1) // num_workers // (time.time() - time_start))):,}')
+    #     if try_it(i):
+    #         print(f'{i=}')
+    #         break
+
+
+
+
+
+
+# seq = checker(solved_int)
+# print('Slow guy', seq)
+# print('Original program', og_prog)
+
+
 
 
 # part 1

@@ -22,13 +22,15 @@ def needed(num, blink_left):
     if blink_left == 0:
         return 1
     if (num, blink_left) in cache:
-        return cache[(num, blink_left)]    
-    new = []
+        return cache[(num, blink_left)]
+    
     if num == 0:
         ans = needed(1, blink_left - 1)
+
     elif len(str(num)) % 2 == 0:
         left, right = str(num)[:len(str(num))//2], str(num)[len(str(num))//2:]
         ans = needed(int(left), blink_left - 1) + needed(int(right), blink_left - 1)
+
     else:
         ans = needed(num * 2024, blink_left - 1)
 
