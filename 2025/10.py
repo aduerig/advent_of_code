@@ -52,9 +52,20 @@ def solve_machine(needed_jolt, all_buttons):
         if curr_jolt == needed_jolt:
             return presses
         
+        mults = []
         for to_go, needed in zip(curr_jolt, needed_jolt):
+            if needed % to_go == 0:
+                mults.append(needed // to_go)
             if to_go > needed:
                 continue
+                
+        first = mults[0]
+        all_same = True
+        for m in mults:
+            if m != first:
+                all_same = False
+        if all_same:
+            return first * presses
 
         for b in all_buttons:
             new_jolt = list(curr_jolt)
