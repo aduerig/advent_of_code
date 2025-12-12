@@ -43,7 +43,10 @@ def solve_machine(needed_jolt, all_buttons):
     queue = [[tuple(start_state), 0]]
     queue = deque(queue)
     seen = set()
+    least_seen = float('inf')
     print(f'{needed_jolt=}')
+
+    unchanged = 0
     while queue:
         curr_jolt, presses = queue.popleft()
         if curr_jolt in seen:
@@ -51,21 +54,40 @@ def solve_machine(needed_jolt, all_buttons):
         seen.add(curr_jolt)
         if curr_jolt == needed_jolt:
             return presses
+
+        unchanged += 1
+
+        if unchanged > 100000 and least_seen < float('inf'):
+            return least_seen
         
         mults = []
         for to_go, needed in zip(curr_jolt, needed_jolt):
-            if needed % to_go == 0:
-                mults.append(needed // to_go)
             if to_go > needed:
                 continue
+
+            if to_go == 0:
+                if needed == 0:
+                    mults.append(True)
+                else:
+                    mults.append(-1)
+            elif needed % to_go == 0:
+                mults.append(needed // to_go)
                 
-        first = mults[0]
+        samer = None
         all_same = True
         for m in mults:
-            if m != first:
+            if m is True:
+                continue
+            if samer is None:
+                samer = m
+            if m != samer:
                 all_same = False
-        if all_same:
-            return first * presses
+        
+        if samer and all_same and samer != -1:
+            new = samer * presses
+            if new < least_seen:
+                least_seen = new
+                unchanged = 0
 
         for b in all_buttons:
             new_jolt = list(curr_jolt)
@@ -74,6 +96,9 @@ def solve_machine(needed_jolt, all_buttons):
             new_state = [tuple(new_jolt), presses + 1]
             queue.append(new_state)
 
+# too high: 25975
+
+# too low: 6939
         
 
 presses = 0
