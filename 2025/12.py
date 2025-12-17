@@ -124,7 +124,6 @@ def recurse(curr_board, width, height, req, just_bitboards, visited, non_occupie
                         non_occupied.remove((row, col))
                         if recurse(next_board, width, height, req, just_bitboards, visited, non_occupied):
                             return True
-                        backtracks += 1
                         req[shape_index] += 1
                         non_occupied.add((row, col))
     if all_good:

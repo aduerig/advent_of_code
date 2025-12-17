@@ -3,6 +3,7 @@
 # https://adventofcode.com/2023
 import sys
 import pathlib
+import time
 from collections import deque
 
 filepath = pathlib.Path(__file__)
@@ -38,72 +39,47 @@ with open(data_file) as f:
         machines.append(whole_machine)
 
 
+def recurse(curr, all_buttons, visited, presses):
+    if all([x == 0 for x in curr]):
+        return presses
+    
+    if curr in visited:
+        return visited[curr]
+
+    for button in all_buttons:
+        legal = True
+        for b in button:
+            if not curr[b]:
+                legal = False
+        if legal:
+            new_curr = list(curr)
+            for b in button:
+                new_curr[b] -= 1
+            ans = recurse(tuple(new_curr), all_buttons, visited, presses + 1)
+            if ans:
+                return ans
+    visited[curr] = None
+
+
 def solve_machine(needed_jolt, all_buttons):
-    start_state = [0] * len(needed_jolt)
-    queue = [[tuple(start_state), 0]]
-    queue = deque(queue)
-    seen = set()
-    least_seen = float('inf')
-    print(f'{needed_jolt=}')
+    all_buttons.sort(key=lambda x: -len(x))
+    return recurse(tuple(needed_jolt), all_buttons, {}, 0)
 
-    unchanged = 0
-    while queue:
-        curr_jolt, presses = queue.popleft()
-        if curr_jolt in seen:
-            continue
-        seen.add(curr_jolt)
-        if curr_jolt == needed_jolt:
-            return presses
 
-        unchanged += 1
-
-        if unchanged > 100000 and least_seen < float('inf'):
-            return least_seen
-        
-        mults = []
-        for to_go, needed in zip(curr_jolt, needed_jolt):
-            if to_go > needed:
-                continue
-
-            if to_go == 0:
-                if needed == 0:
-                    mults.append(True)
-                else:
-                    mults.append(-1)
-            elif needed % to_go == 0:
-                mults.append(needed // to_go)
-                
-        samer = None
-        all_same = True
-        for m in mults:
-            if m is True:
-                continue
-            if samer is None:
-                samer = m
-            if m != samer:
-                all_same = False
-        
-        if samer and all_same and samer != -1:
-            new = samer * presses
-            if new < least_seen:
-                least_seen = new
-                unchanged = 0
-
-        for b in all_buttons:
-            new_jolt = list(curr_jolt)
-            for to_flip in b:
-                new_jolt[to_flip] += 1
-            new_state = [tuple(new_jolt), presses + 1]
-            queue.append(new_state)
-
-# too high: 25975
-
-# too low: 6939
         
 
 presses = 0
 for indic, all_buttons, jolts in machines:
     print(f'indic: {indic}, all_buttons: {all_buttons}, jolts: {jolts}')
-    presses += solve_machine(tuple(jolts), all_buttons)
+    before = time.time()
+    ans = solve_machine(tuple(jolts), all_buttons)
+    after = time.time()
+    presses += ans
+    print(f'Solved with {ans} presses in {after - before:.2f} seconds')
 
 print(f'Needs {presses} presses')
+
+
+# too high: 25975
+
+# too low: 6939
